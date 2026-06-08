@@ -1,0 +1,4 @@
+---
+exclude:
+  - "vendor/bundle/**/*"
+EnableDefaultLinters: true

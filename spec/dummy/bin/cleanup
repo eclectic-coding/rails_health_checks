@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+#set -e
+
+echo "[ bin/cleanup ] Running tests"
+bin/rails test
+
+echo "[ bin/cleanup ] Analyzing code for security vulnerabilities with brakeman."
+echo "[ bin/cleanup ] Output will be in tmp/brakeman.html, which"
+echo "[ bin/cleanup ] can be opened in your browser."
+bundle exec brakeman -q -o tmp/brakeman.html
+
+echo "[ bin/cleanup ] Analyzing Ruby gems for"
+echo "[ bin/cleanup ] security vulnerabilities with bundle audit"
+bundle exec bundle-audit check --update
+
+echo "[ bin/cleanup ] Linting: Running rubocop"
+bin/rubocop
+
+echo "[ bin/cleanup ] Done"

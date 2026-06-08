@@ -1,0 +1,36 @@
+inherit_from: .rubocop_todo.yml
+
+# Omakase Ruby styling for Rails
+inherit_gem:
+  rubocop-rails-omakase: rubocop.yml
+
+# Your own specialized rules go here
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.3
+  Exclude:
+    - bin/**/*
+    - config/**/*
+    - db/**/*.rb
+    - lib/**/*
+    - node_modules/**/*
+    - spec/spec_helper.rb
+    - tmp/**/*
+    - vendor/**/*
+
+Layout/EmptyLinesAroundAccessModifier:
+  Enabled: true
+  EnforcedStyle: around
+
+Layout/EmptyLineBetweenDefs:
+  Enabled: true
+  NumberOfEmptyLines: 1
+
+Layout/IndentationWidth:
+  Width: 2
+
+Style/StringLiterals:
+  Enabled: false
+
+Style/UnlessElse:
+  Enabled: true

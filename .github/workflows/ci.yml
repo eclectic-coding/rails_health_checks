@@ -59,7 +59,7 @@ jobs:
       - name: Prepare Database
         run: |
           cd spec/dummy
-          bin/rails db:create db:migrate
+          bundle exec rake db:create db:migrate
 
       - name: Run tests
         run: bundle exec rspec

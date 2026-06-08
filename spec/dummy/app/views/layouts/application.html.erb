@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="<%= locale %>" class="h-100">
+  <head>
+    <title><%= content_for(:title) || Rails.application.class.module_parent_name %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+  </head>
+
+  <body class="d-flex flex-column h-100 bg-body">
+    <main class="">
+      <%= render "shared/navbar" %>
+      <%= render "shared/notices" %>
+
+      <div class="container mt-5 mx-auto">
+        <%= yield %>
+      </div>
+
+      <%= content_tag :div, '', class: "container d-flex" do %>
+        <div class="card w-75 shadow-sm p-3">
+          <%= debug(params) if Rails.env.local? %>
+        </div>
+      <% end if Rails.env.local? %>
+    </main>
+
+
+    <%= render "shared/footer" %>
+  </body>
+</html>
