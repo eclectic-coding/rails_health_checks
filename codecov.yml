@@ -1,6 +1,14 @@
 # Disable PR bot comments — status checks are sufficient
 comment: false
 
+# Mirror SimpleCov filters — boilerplate and generated files excluded from coverage
+ignore:
+  - "spec/"
+  - "app/jobs/"
+  - "app/mailers/"
+  - "app/models/"
+  - "lib/rails_health_checks/version.rb"
+
 coverage:
   status:
     project:
