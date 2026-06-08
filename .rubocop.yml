@@ -1,7 +1,8 @@
-require:
+plugins:
   - rubocop-rails
 
 AllCops:
+  SuggestExtensions: false
   NewCops: enable
   TargetRubyVersion: 3.3
   Exclude:
