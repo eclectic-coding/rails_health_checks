@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Initial release of the `rails_health_checks` Rails engine
+- `GET /health` endpoint returning structured JSON with `ok`/`degraded`/`critical` status, per-check latency, and ISO8601 timestamp
+- `GET /health/live` endpoint returning plain text `OK`/`Service Unavailable` for load balancer liveness probes
+- Built-in `database` check using ActiveRecord `SELECT 1` with latency tracking
+- Base `Check` class with `pass`, `warn_with`, `fail_with`, and `measure` helpers
+- `CheckRegistry` for registering and running checks with global timeout and error isolation
+- `ResponseBuilder` for composing JSON responses and HTTP status codes
+- Configuration DSL via `RailsHealthChecks.configure` (`checks`, `timeout`)
 
 [Unreleased]: https://github.com/eclectic-coding/rails_health_checks/compare/main...HEAD

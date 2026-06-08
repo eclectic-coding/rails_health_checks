@@ -2,7 +2,20 @@
 
 require 'rails_health_checks/version'
 require 'rails_health_checks/engine'
+require 'rails_health_checks/configuration'
+require 'rails_health_checks/check'
+require 'rails_health_checks/checks/database_check'
+require 'rails_health_checks/check_registry'
+require 'rails_health_checks/response_builder'
 
 module RailsHealthChecks
-  # Your code goes here...
+  class << self
+    def configure
+      yield(configuration)
+    end
+
+    def configuration
+      @configuration ||= Configuration.new
+    end
+  end
 end

@@ -5,18 +5,19 @@
 [![downloads](https://img.shields.io/gem/dt/rails_health_checks.svg)](https://rubygems.org/gems/rails_health_checks)
 [![ruby](https://img.shields.io/badge/ruby-%3E%3D%203.3-ruby.svg)](https://www.ruby-lang.org)
 [![codecov](https://codecov.io/gh/eclectic-coding/rails_health_checks/branch/main/graph/badge.svg)](https://codecov.io/gh/eclectic-coding/rails_health_checks)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A Rails engine that provides configurable health check endpoints for monitoring application status.
+A Rails engine providing structured, pluggable health check endpoints for monitoring application status. Goes beyond Rails' built-in `/up` endpoint with per-check diagnostics, latency tracking, and a configurable check registry.
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add to your Gemfile:
 
 ```ruby
 gem "rails_health_checks"
 ```
 
-Then execute:
+Then run:
 
 ```bash
 bundle install
@@ -28,15 +29,44 @@ Mount the engine in `config/routes.rb`:
 mount RailsHealthChecks::Engine => "/health"
 ```
 
-## Usage
+## Endpoints
 
-Once mounted, the following endpoints are available:
+| Endpoint | Format | Use case |
+|----------|--------|----------|
+| `GET /health` | JSON | Monitoring dashboards, detailed diagnostics |
+| `GET /health/live` | Plain text | Load balancer liveness probes |
 
-| Endpoint       | Description                       |
-|----------------|-----------------------------------|
-| `GET /health`  | Overall application health status |
+HTTP status is `200 OK` when all checks pass, `503 Service Unavailable` otherwise.
 
-Responses return JSON with an HTTP status of `200 OK` (healthy) or `503 Service Unavailable` (unhealthy).
+### JSON response shape
+
+```json
+{
+  "status": "ok",
+  "timestamp": "2026-06-08T20:00:00Z",
+  "checks": {
+    "database": { "status": "ok", "latency_ms": 4 }
+  }
+}
+```
+
+Status values: `ok` | `degraded` | `critical`. Overall status is `critical` if any check is `critical`, `degraded` if any is `degraded`.
+
+## Configuration
+
+```ruby
+# config/initializers/rails_health_checks.rb
+RailsHealthChecks.configure do |config|
+  config.checks  = [:database]  # checks to run (default: [:database])
+  config.timeout = 5            # global timeout per check in seconds (default: 5)
+end
+```
+
+## Built-in checks
+
+| Check | Description |
+|-------|-------------|
+| `:database` | ActiveRecord `SELECT 1` against the primary connection, includes latency |
 
 ## Contributing
 

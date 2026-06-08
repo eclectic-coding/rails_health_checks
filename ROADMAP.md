@@ -4,39 +4,6 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 
 ---
 
-## [0.1.0] — Foundation
-
-> Initial release. Engine boots, one working endpoint, one built-in check, full specs.
-
-**Endpoints:**
-- `GET /health` — JSON response, `200 OK` (healthy) or `503 Service Unavailable` (unhealthy)
-- `GET /health/live` — plain text `OK` / `Service Unavailable` for load balancer liveness probes
-
-**Built-in checks:**
-- `database` — ActiveRecord `SELECT 1` connectivity against the primary connection, includes latency
-
-**Response shape:**
-```json
-{
-  "status": "ok",
-  "timestamp": "2026-06-08T20:00:00Z",
-  "checks": {
-    "database": { "status": "ok", "latency_ms": 4 }
-  }
-}
-```
-Status values: `ok` | `degraded` | `critical`. Overall is `critical` if any check is `critical`; `degraded` if any is `degraded`.
-
-**Configuration DSL:**
-```ruby
-RailsHealthChecks.configure do |config|
-  config.checks  = [:database]  # enable/disable built-in checks
-  config.timeout = 5            # global check timeout in seconds
-end
-```
-
----
-
 ## [0.2.0] — Authentication & Authorization
 
 > Protect health endpoints from public exposure.
