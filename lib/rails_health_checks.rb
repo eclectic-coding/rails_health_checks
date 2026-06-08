@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'rails_health_checks/version'
-require 'rails_health_checks/engine'
-require 'rails_health_checks/configuration'
-require 'rails_health_checks/check'
-require 'rails_health_checks/checks/database_check'
-require 'rails_health_checks/check_registry'
-require 'rails_health_checks/response_builder'
+require "rails_health_checks/version"
+require "rails_health_checks/engine"
+require "rails_health_checks/configuration"
+require "rails_health_checks/check"
+require "rails_health_checks/checks/database_check"
+require "rails_health_checks/check_registry"
+require "rails_health_checks/response_builder"
 
 module RailsHealthChecks
   class << self

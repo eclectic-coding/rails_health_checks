@@ -5,7 +5,7 @@ module RailsHealthChecks
     attr_accessor :checks, :timeout
 
     def initialize
-      @checks = [:database]
+      @checks = [ :database ]
       @timeout = 5
     end
   end

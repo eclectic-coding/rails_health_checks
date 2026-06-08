@@ -8,12 +8,12 @@ module RailsHealthChecks
 
     def overall_status
       statuses = @results.values.map(&:status)
-      if statuses.include?('critical')
-        'critical'
-      elsif statuses.include?('degraded')
-        'degraded'
+      if statuses.include?("critical")
+        "critical"
+      elsif statuses.include?("degraded")
+        "degraded"
       else
-        'ok'
+        "ok"
       end
     end
 
@@ -29,7 +29,7 @@ module RailsHealthChecks
     end
 
     def http_status
-      overall_status == 'ok' ? :ok : :service_unavailable
+      overall_status == "ok" ? :ok : :service_unavailable
     end
   end
 end

@@ -5,8 +5,8 @@ require_relative 'lib/rails_health_checks/version'
 Gem::Specification.new do |spec|
   spec.name        = 'rails_health_checks'
   spec.version     = RailsHealthChecks::VERSION
-  spec.authors     = ['Chuck Smith']
-  spec.email       = ['chuck@eclecticcoding.com']
+  spec.authors     = [ 'Chuck Smith' ]
+  spec.email       = [ 'chuck@eclecticcoding.com' ]
   spec.homepage    = 'https://github.com/eclectic-coding/rails_health_checks'
   spec.summary     = 'Health check endpoints for Rails applications.'
   spec.description = 'A Rails engine providing configurable health check endpoints for monitoring application status.'

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'timeout'
+require "timeout"
 
 module RailsHealthChecks
   class CheckRegistry
@@ -25,13 +25,13 @@ module RailsHealthChecks
       Timeout.timeout(timeout) { check.call }
       check
     rescue Timeout::Error
-      mark_critical(check, 'timed out')
+      mark_critical(check, "timed out")
     rescue StandardError => e
       mark_critical(check, e.message)
     end
 
     def self.mark_critical(check, message)
-      check.instance_variable_set(:@status, 'critical')
+      check.instance_variable_set(:@status, "critical")
       check.instance_variable_set(:@message, message)
       check
     end
