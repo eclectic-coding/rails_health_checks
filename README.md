@@ -9,6 +9,17 @@
 
 A Rails engine providing structured, pluggable health check endpoints for monitoring application status. Goes beyond Rails' built-in `/up` endpoint with per-check diagnostics, latency tracking, and a configurable check registry.
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Endpoints](#endpoints)
+- [Configuration](#configuration)
+- [Built-in Checks](#built-in-checks)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
 ## Installation
 
 Add to your Gemfile:
@@ -28,6 +39,10 @@ Mount the engine in `config/routes.rb`:
 ```ruby
 mount RailsHealthChecks::Engine => "/health"
 ```
+
+[↑ Back to top](#table-of-contents)
+
+---
 
 ## Endpoints
 
@@ -52,6 +67,10 @@ HTTP status is `200 OK` when all checks pass, `503 Service Unavailable` otherwis
 
 Status values: `ok` | `degraded` | `critical`. Overall status is `critical` if any check is `critical`, `degraded` if any is `degraded`.
 
+[↑ Back to top](#table-of-contents)
+
+---
+
 ## Configuration
 
 ```ruby
@@ -62,11 +81,19 @@ RailsHealthChecks.configure do |config|
 end
 ```
 
-## Built-in checks
+[↑ Back to top](#table-of-contents)
+
+---
+
+## Built-in Checks
 
 | Check | Description |
 |-------|-------------|
 | `:database` | ActiveRecord `SELECT 1` against the primary connection, includes latency |
+
+[↑ Back to top](#table-of-contents)
+
+---
 
 ## Contributing
 
@@ -75,6 +102,10 @@ end
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+[↑ Back to top](#table-of-contents)
+
+---
 
 ## License
 
