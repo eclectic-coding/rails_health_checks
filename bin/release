@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Usage: bin/release <version>
+#   e.g. bin/release 0.2.0
+
+VERSION="${1:-}"
+
+if [[ -z "$VERSION" ]]; then
+  echo "Usage: bin/release <version>"
+  exit 1
+fi
+
+TAG="v$VERSION"
+VERSION_FILE="lib/rails_health_checks/version.rb"
+
+# Must be on main
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [[ "$BRANCH" != "main" ]]; then
+  echo "error: must be on main branch (currently on $BRANCH)"
+  exit 1
+fi
+
+# Working tree must be clean (ignoring .claude/ internal files)
+if ! git diff --quiet -- ':!.claude' || ! git diff --cached --quiet -- ':!.claude'; then
+  echo "error: working tree has uncommitted changes"
+  exit 1
+fi
+
+# Tag must not already exist
+if git tag | grep -q "^$TAG$"; then
+  echo "error: tag $TAG already exists"
+  exit 1
+fi
+
+echo "==> Running test suite..."
+bundle exec rake
+
+echo ""
+echo "==> Bumping version to $VERSION..."
+sed -i '' "s/VERSION = \".*\"/VERSION = \"$VERSION\"/" "$VERSION_FILE"
+
+echo "==> Updating Gemfile.lock..."
+bundle install --quiet
+
+echo "==> Updating CHANGELOG..."
+TODAY=$(date +%Y-%m-%d)
+# Rename [Unreleased] heading to the new version + date
+sed -i '' "s/^## \[Unreleased\]$/## [$VERSION] - $TODAY/" CHANGELOG.md
+# Re-insert an empty [Unreleased] section at the top
+awk "/^## \[$VERSION\]/{print \"## [Unreleased]\n\"; print; next}1" CHANGELOG.md > CHANGELOG.tmp && mv CHANGELOG.tmp CHANGELOG.md
+# Update the comparison links at the bottom
+sed -i '' \
+  "s|^\[Unreleased\]:.*|\[Unreleased\]: https://github.com/eclectic-coding/rails_health_checks/compare/$TAG...HEAD|" \
+  CHANGELOG.md
+# Insert the new version link after the [Unreleased] link
+sed -i '' \
+  "/^\[Unreleased\]:/a\\
+[$VERSION]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/$TAG" \
+  CHANGELOG.md
+
+echo "==> Pruning shipped ROADMAP section..."
+MINOR_VERSION=$(echo "$VERSION" | cut -d. -f1-2)
+awk -v ver="$MINOR_VERSION" '
+  /^## / && $0 ~ ("^## " ver "([^0-9]|$)") { skip=1; next }
+  skip && /^---/ { skip=0; next }
+  !skip
+' ROADMAP.md > ROADMAP.tmp && mv ROADMAP.tmp ROADMAP.md
+
+echo "==> Committing release..."
+git add "$VERSION_FILE" Gemfile.lock CHANGELOG.md ROADMAP.md
+git commit -m "Release $TAG"
+
+echo "==> Tagging $TAG..."
+git tag -a "$TAG" -m "Release $TAG"
+
+echo "==> Pushing to GitHub..."
+git push origin main
+git push origin "$TAG"
+
+echo "==> Done. CI will build and publish the gem once the tag is picked up."
+echo "    Monitor: https://github.com/eclectic-coding/rails_health_checks/actions"
