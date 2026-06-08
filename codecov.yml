@@ -1,0 +1,17 @@
+# Configure Pull Request Bot Comments
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
+  # Only post or update the comment if the coverage drops
+  require_changes: "coverage_drop"
+
+# Configure Commit Status Checks (the green checkmark/red X list)
+coverage:
+  status:
+    project:
+      default:
+        # Prevent "Informational" mode so a drop causes an actual red failure check
+        informational: false
+    patch:
+      default:
+        informational: false
