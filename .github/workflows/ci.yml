@@ -1,9 +1,9 @@
 name: CI
 
 on:
-  pull_request:
   push:
-    branches: [ main ]
+    branches: [main]
+  pull_request:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -35,57 +35,45 @@ jobs:
             rubocop-${{ runner.os }}-${{ env.RUBY_VERSION }}-${{ env.DEPENDENCIES_HASH }}-
 
       - name: Lint code for consistent style
-        run: bundle exec rubocop
+        run: bin/rubocop -f github
 
-  security:
+  audit:
     name: Security Audit
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "4.0"
+          ruby-version: "3.4"
           bundler-cache: true
 
-      - name: Update advisory database
-        run: bundle exec bundler-audit update
-
-      - name: Audit dependencies
-        run: bundle exec bundler-audit check
+      - run: bundle exec bundle-audit update
+      - run: bundle exec bundle-audit check
 
   test:
+    name: Ruby ${{ matrix.ruby }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        ruby: [ "3.3", "3.4", "4.0" ]
+        ruby: ["3.3", "3.4", "4.0"]
     env:
       RAILS_ENV: test
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
 
-      - name: Set up Ruby ${{ matrix.ruby }}
-        uses: ruby/setup-ruby@v1
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
 
-      - name: Prepare Database
-        run: |
-          cd spec/dummy
-          bundle exec rake db:create db:migrate
-
-      - name: Run tests
-        run: bundle exec rspec
+      - run: bundle exec rspec
 
       - name: Upload coverage to Codecov
-        if: matrix.ruby == '3.4'
-        uses: codecov/codecov-action@v5
+        if: matrix.ruby == '4.0'
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: false
-
