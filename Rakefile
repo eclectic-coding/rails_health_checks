@@ -11,4 +11,4 @@ RuboCop::RakeTask.new(:lint)
 Bundler::Audit::Task.new
 RSpec::Core::RakeTask.new(:spec)
 
-task default: [ :lint, :'bundle:audit:update', 'bundle:audit:check', :spec ]
+task default: [:lint, :'bundle:audit:update', 'bundle:audit:check', :spec]
