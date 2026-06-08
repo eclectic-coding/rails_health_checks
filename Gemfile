@@ -15,7 +15,8 @@ gem 'factory_bot_rails'
 gem 'rspec-rails'
 gem 'rubocop-rails'
 gem 'rubocop-rails-omakase', require: false
-gem 'simplecov', require: false
+gem 'simplecov',      require: false
+gem 'simplecov-json', require: false
 
 # Start debugger with binding.b [https://github.com/ruby/debug]
 # gem "debug", ">= 1.0.0"
