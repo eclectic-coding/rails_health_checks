@@ -1,21 +1,15 @@
-plugins:
-  - rubocop-rails
+inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 
 AllCops:
-  SuggestExtensions: false
-  NewCops: enable
-  TargetRubyVersion: 3.3
   Exclude:
     - 'bin/**/*'
     - 'spec/dummy/**/*'
     - 'vendor/**/*'
 
-Style/Documentation:
-  Enabled: false
-
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
 
-Rails:
+Layout/SpaceInsideArrayLiteralBrackets:
   Enabled: true
+  EnforcedStyle: no_space

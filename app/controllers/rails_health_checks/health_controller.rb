@@ -9,10 +9,10 @@ module RailsHealthChecks
 
     def live
       builder = ResponseBuilder.new(run_checks)
-      if builder.overall_status == 'ok'
-        render plain: 'OK', status: :ok
+      if builder.overall_status == "ok"
+        render plain: "OK", status: :ok
       else
-        render plain: 'Service Unavailable', status: :service_unavailable
+        render plain: "Service Unavailable", status: :service_unavailable
       end
     end
 

@@ -11,17 +11,17 @@ module RailsHealthChecks
     private
 
     def pass(message = nil)
-      @status = 'ok'
+      @status = "ok"
       @message = message
     end
 
     def warn_with(message)
-      @status = 'degraded'
+      @status = "degraded"
       @message = message
     end
 
     def fail_with(message)
-      @status = 'critical'
+      @status = "critical"
       @message = message
     end
 
