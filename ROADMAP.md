@@ -8,11 +8,6 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 
 > First-class extensibility for host applications.
 
-**Per-environment toggling:**
-```ruby
-config.disable :disk_space, in: :test
-```
-
 ---
 
 ## [0.6.0] — Async & Observability

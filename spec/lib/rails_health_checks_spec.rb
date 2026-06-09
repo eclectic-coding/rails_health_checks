@@ -17,6 +17,36 @@ RSpec.describe RailsHealthChecks do
       expect(described_class.configuration.timeout).to eq(10)
     end
 
+    describe "config.disable" do
+      before { described_class.configure { |c| c.checks = [:database, :disk, :memory] } }
+
+      context "when the current environment matches" do
+        it "omits the check from config.checks" do
+          described_class.configure { |c| c.disable :disk, in: :test }
+          expect(described_class.configuration.checks).not_to include(:disk)
+        end
+
+        it "leaves other checks intact" do
+          described_class.configure { |c| c.disable :disk, in: :test }
+          expect(described_class.configuration.checks).to include(:database, :memory)
+        end
+      end
+
+      context "when the current environment does not match" do
+        it "keeps the check in config.checks" do
+          described_class.configure { |c| c.disable :disk, in: :production }
+          expect(described_class.configuration.checks).to include(:disk)
+        end
+      end
+
+      context "with multiple environments" do
+        it "disables the check when the current env is any of the listed envs" do
+          described_class.configure { |c| c.disable :disk, in: [:test, :development] }
+          expect(described_class.configuration.checks).not_to include(:disk)
+        end
+      end
+    end
+
     describe "config.group" do
       it "stores check names under the group key" do
         described_class.configure { |c| c.group(:infra, [:database, :disk]) }

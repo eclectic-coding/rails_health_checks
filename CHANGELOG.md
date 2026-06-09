@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Custom check API: `config.register :name, MyCheck.new` registers a host-app check (subclass of `RailsHealthChecks::Check`) and appends it to the active checks list; the check is `dup`'d on each health request so state does not leak between calls
 - Composite group API: `config.group :name, [:check_a, :check_b]` defines a named subset of checks exposed at `GET /health/:name`; returns the same JSON shape as `GET /health` but scoped to the group; unknown groups return `404`
+- Per-environment toggling: `config.disable :check_name, in: :test` (or `in: [:test, :development]`) removes the check from the active list when `Rails.env` matches; filtering is applied at access time so check lists remain inspectable
 
 ## [0.4.0] - 2026-06-09
 
