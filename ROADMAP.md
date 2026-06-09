@@ -4,14 +4,6 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 
 ---
 
-## [0.8.0] — Extended Check Suite
-
-> Additional built-in checks for common production dependencies.
-
-- **SMTP check** — `config.checks = [:smtp]` verifies mail server connectivity via `Net::SMTP`; optional `config.smtp_address` and `config.smtp_port`; no extra gems required
-
----
-
 ## [1.0.0] — Stable
 
 > Production-hardened, fully documented, and migration-friendly.
