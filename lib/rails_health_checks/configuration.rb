@@ -5,7 +5,7 @@ module RailsHealthChecks
     attr_accessor :checks, :timeout, :allowed_ips, :token, :sidekiq_queue_size, :solid_queue_job_count, :good_job_latency,
                   :resque_queue_size, :disk_warn_threshold, :disk_critical_threshold, :disk_path,
                   :memory_threshold, :http_url, :http_expected_status
-    attr_reader :authenticate_block, :custom_checks
+    attr_reader :authenticate_block, :custom_checks, :groups
 
     def initialize
       @checks = [:database]
@@ -24,10 +24,15 @@ module RailsHealthChecks
       @http_url = nil
       @http_expected_status = 200
       @custom_checks = {}
+      @groups = {}
     end
 
     def authenticate(&block)
       @authenticate_block = block
+    end
+
+    def group(name, check_names)
+      @groups[name] = check_names
     end
 
     def register(name, check)

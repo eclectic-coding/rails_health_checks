@@ -37,6 +37,46 @@ RSpec.describe 'Health endpoints', type: :request do
     end
   end
 
+  describe 'GET /health/:group' do
+    before do
+      RailsHealthChecks.configure { |c| c.group(:db_only, [:database]) }
+    end
+
+    after { RailsHealthChecks.instance_variable_set(:@configuration, nil) }
+
+    context 'when the group exists' do
+      it 'returns 200 with JSON body containing only the group checks' do
+        get '/health/db_only'
+
+        expect(response).to have_http_status(:ok)
+        json = response.parsed_body
+        expect(json['status']).to eq('ok')
+        expect(json['checks'].keys).to eq(['database'])
+      end
+
+      context 'when a check in the group fails' do
+        before do
+          allow(ActiveRecord::Base.connection).to receive(:execute).and_raise(StandardError, 'db down')
+        end
+
+        it 'returns 503' do
+          get '/health/db_only'
+          expect(response).to have_http_status(:service_unavailable)
+          expect(response.parsed_body['status']).to eq('critical')
+        end
+      end
+    end
+
+    context 'when the group does not exist' do
+      it 'returns 404 with an error message' do
+        get '/health/nonexistent'
+
+        expect(response).to have_http_status(:not_found)
+        expect(response.parsed_body['error']).to match(/nonexistent/)
+      end
+    end
+  end
+
   describe 'GET /health/live' do
     context 'when all checks pass' do
       it 'returns 200 with OK text' do

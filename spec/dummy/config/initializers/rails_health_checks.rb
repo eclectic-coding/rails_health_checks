@@ -16,4 +16,7 @@ RailsHealthChecks.configure do |config|
   config.memory_threshold = 512 * 1024**2 # 512 MB → degraded
 
   config.register :app_status, AppStatusCheck.new
+
+  config.group :system, [:disk, :memory]
+  config.group :app,    [:database, :cache, :app_status]
 end

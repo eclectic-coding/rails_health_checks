@@ -15,6 +15,7 @@ A Rails engine providing structured, pluggable health check endpoints for monito
 - [Configuration](#configuration)
 - [Authentication](#authentication)
 - [Built-in Checks](#built-in-checks)
+- [Check Groups](#check-groups)
 - [Custom Checks](#custom-checks)
 - [Contributing](#contributing)
 - [License](#license)
@@ -135,6 +136,28 @@ The block receives the `ActionDispatch::Request` object and must return a truthy
 | `:disk` | Free disk bytes via `df`; optional `config.disk_warn_threshold` / `config.disk_critical_threshold` (bytes) and `config.disk_path` (default: `/`) |
 | `:memory` | Process RSS via `ps`; optional `config.memory_threshold` (bytes) reports `degraded` when exceeded |
 | `:http` | HTTP GET to `config.http_url`; reports `critical` if response code differs from `config.http_expected_status` (default: `200`) or a network error occurs |
+
+[↑ Back to top](#table-of-contents)
+
+---
+
+## Check Groups
+
+Group related checks and expose them at a dedicated endpoint:
+
+```ruby
+RailsHealthChecks.configure do |config|
+  config.group :system,  [:disk, :memory]
+  config.group :workers, [:sidekiq, :good_job]
+end
+```
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /health/system` | Runs only `:disk` and `:memory`, same JSON shape as `GET /health` |
+| `GET /health/workers` | Runs only `:sidekiq` and `:good_job` |
+
+Unknown group names return `404 Not Found`.
 
 [↑ Back to top](#table-of-contents)
 

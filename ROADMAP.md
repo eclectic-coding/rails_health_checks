@@ -8,12 +8,6 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 
 > First-class extensibility for host applications.
 
-**Composite groups:**
-```ruby
-config.group :external_services, [:external_api, :payment_gateway]
-# GET /health/external_services returns rolled-up status for the group
-```
-
 **Per-environment toggling:**
 ```ruby
 config.disable :disk_space, in: :test
