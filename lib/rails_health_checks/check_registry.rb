@@ -11,6 +11,7 @@ module RailsHealthChecks
       solid_queue: -> { Checks::SolidQueueCheck.new(job_count: RailsHealthChecks.configuration.solid_queue_job_count) },
       good_job:    -> { Checks::GoodJobCheck.new(latency: RailsHealthChecks.configuration.good_job_latency) },
       resque:      -> { Checks::ResqueCheck.new(queue_size: RailsHealthChecks.configuration.resque_queue_size) },
+      memory:      -> { Checks::MemoryCheck.new(threshold: RailsHealthChecks.configuration.memory_threshold) },
       disk:        -> { Checks::DiskCheck.new(
         warn_threshold:     RailsHealthChecks.configuration.disk_warn_threshold,
         critical_threshold: RailsHealthChecks.configuration.disk_critical_threshold,

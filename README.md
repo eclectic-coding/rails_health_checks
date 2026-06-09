@@ -132,6 +132,7 @@ The block receives the `ActionDispatch::Request` object and must return a truthy
 | `:good_job` | GoodJob queue latency; optional `config.good_job_latency` (seconds) threshold for oldest pending job |
 | `:resque` | Resque Redis connectivity; optional `config.resque_queue_size` threshold for total queue depth |
 | `:disk` | Free disk bytes via `df`; optional `config.disk_warn_threshold` / `config.disk_critical_threshold` (bytes) and `config.disk_path` (default: `/`) |
+| `:memory` | Process RSS via `ps`; optional `config.memory_threshold` (bytes) reports `degraded` when exceeded |
 
 [↑ Back to top](#table-of-contents)
 
