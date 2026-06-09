@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Built-in `disk` check using `df -Pk` to measure free disk bytes; optional `config.disk_warn_threshold` reports `degraded` and `config.disk_critical_threshold` reports `critical` when free space falls below the configured byte thresholds; `config.disk_path` selects the mount point to check (default: `/`)
+- Built-in `memory` check using `ps` to measure process RSS; optional `config.memory_threshold` (bytes) reports `degraded` when RSS exceeds the threshold
 
 ## [0.3.0] - 2026-06-09
 
