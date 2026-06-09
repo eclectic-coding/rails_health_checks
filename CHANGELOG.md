@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Built-in `cache` check using `Rails.cache` read/write probe; works with Redis, Memcached, or in-process store
+
 ## [0.2.0] - 2026-06-09
 
 ### Added
