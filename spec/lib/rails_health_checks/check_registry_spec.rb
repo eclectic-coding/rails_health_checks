@@ -14,6 +14,13 @@ RSpec.describe RailsHealthChecks::CheckRegistry do
       expect(result[:cache]).to be_a(RailsHealthChecks::Checks::CacheCheck)
     end
 
+    it "builds a good_job check when GoodJob is available" do
+      stub_const("GoodJob", Module.new)
+      stub_const("GoodJob::Job", Class.new { def self.where(*); end })
+      result = described_class.build([:good_job])
+      expect(result[:good_job]).to be_a(RailsHealthChecks::Checks::GoodJobCheck)
+    end
+
     it "builds a solid_queue check when SolidQueue is available" do
       stub_const("SolidQueue", Module.new)
       stub_const("SolidQueue::ReadyExecution", Class.new { def self.count; end })
