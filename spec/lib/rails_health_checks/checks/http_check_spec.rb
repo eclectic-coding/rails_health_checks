@@ -8,7 +8,13 @@ RSpec.describe RailsHealthChecks::Checks::HttpCheck do
 
   def stub_response(code)
     response = instance_double(Net::HTTPResponse, code: code.to_s)
-    allow(Net::HTTP).to receive(:get_response).with(URI.parse(url)).and_return(response)
+    http = instance_double(Net::HTTP)
+    allow(Net::HTTP).to receive(:start).and_yield(http)
+    allow(http).to receive(:request).and_return(response)
+  end
+
+  def stub_network_error(error_class, message)
+    allow(Net::HTTP).to receive(:start).and_raise(error_class, message)
   end
 
   describe "#call" do
@@ -72,10 +78,28 @@ RSpec.describe RailsHealthChecks::Checks::HttpCheck do
       end
     end
 
-    context "when a network error occurs" do
-      before do
-        allow(Net::HTTP).to receive(:get_response).and_raise(SocketError, "getaddrinfo: nodename nor servname provided")
+    context "with custom request headers" do
+      subject(:check) { described_class.new(url: url, headers: { "Authorization" => "Bearer secret", "X-Custom" => "value" }) }
+
+      it "sends the headers with the request" do
+        response = instance_double(Net::HTTPResponse, code: "200")
+        http = instance_double(Net::HTTP)
+        request_spy = instance_spy(Net::HTTP::Get)
+
+        allow(Net::HTTP).to receive(:start).and_yield(http)
+        allow(Net::HTTP::Get).to receive(:new).and_return(request_spy)
+        allow(http).to receive(:request).with(request_spy).and_return(response)
+
+        check.call
+
+        expect(request_spy).to have_received(:[]=).with("Authorization", "Bearer secret")
+        expect(request_spy).to have_received(:[]=).with("X-Custom", "value")
+        expect(check.status).to eq("ok")
       end
+    end
+
+    context "when a network error occurs" do
+      before { stub_network_error(SocketError, "getaddrinfo: nodename nor servname provided") }
 
       subject(:check) { described_class.new(url: url) }
 

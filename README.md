@@ -57,6 +57,8 @@ mount RailsHealthChecks::Engine => "/health"
 | `GET /health/live` | Plain text | Load balancer liveness probes |
 | `GET /health/metrics` | Prometheus text | Prometheus / OpenMetrics scraping |
 
+`/health` and `/health/live` also respond to `HEAD` requests (useful for lightweight load balancer probes).
+
 HTTP status is `200 OK` when all checks pass, `503 Service Unavailable` otherwise (except `/metrics` which always returns `200`).
 
 ### JSON response shape
@@ -82,10 +84,13 @@ Status values: `ok` | `degraded` | `critical`. Overall status is `critical` if a
 ```ruby
 # config/initializers/rails_health_checks.rb
 RailsHealthChecks.configure do |config|
-  config.checks  = [:database, :cache]  # checks to run (default: [:database])
-  config.timeout = 5            # global timeout per check in seconds (default: 5)
+  config.checks         = [:database, :cache]  # checks to run (default: [:database])
+  config.timeout        = 5                    # global timeout per check in seconds (default: 5)
+  config.cache_duration = 10                   # cache results for N seconds (default: nil, disabled)
 end
 ```
+
+Configuration is validated at boot time. An unknown check name or a missing `http_url` for the `:http` check raises `RailsHealthChecks::ConfigurationError` on startup rather than silently failing on the first request.
 
 [↑ Back to top](#table-of-contents)
 
@@ -139,7 +144,7 @@ The block receives the `ActionDispatch::Request` object and must return a truthy
 | `:resque` | Resque Redis connectivity; optional `config.resque_queue_size` threshold for total queue depth |
 | `:disk` | Free disk bytes via `df`; optional `config.disk_warn_threshold` / `config.disk_critical_threshold` (bytes) and `config.disk_path` (default: `/`) |
 | `:memory` | Process RSS via `ps`; optional `config.memory_threshold` (bytes) reports `degraded` when exceeded |
-| `:http` | HTTP GET to `config.http_url`; reports `critical` if response code differs from `config.http_expected_status` (default: `200`) or a network error occurs |
+| `:http` | HTTP GET to `config.http_url`; reports `critical` if response code differs from `config.http_expected_status` (default: `200`) or a network error occurs; optional `config.http_headers` hash sends custom request headers (e.g. `{ "Authorization" => "Bearer ..." }`) |
 
 [↑ Back to top](#table-of-contents)
 

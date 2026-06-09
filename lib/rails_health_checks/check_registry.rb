@@ -15,7 +15,8 @@ module RailsHealthChecks
       memory:      -> { Checks::MemoryCheck.new(threshold: RailsHealthChecks.configuration.memory_threshold) },
       http:        -> { Checks::HttpCheck.new(
         url:             RailsHealthChecks.configuration.http_url,
-        expected_status: RailsHealthChecks.configuration.http_expected_status
+        expected_status: RailsHealthChecks.configuration.http_expected_status,
+        headers:         RailsHealthChecks.configuration.http_headers
       ) },
       disk:        -> { Checks::DiskCheck.new(
         warn_threshold:     RailsHealthChecks.configuration.disk_warn_threshold,
