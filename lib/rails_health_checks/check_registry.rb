@@ -10,7 +10,12 @@ module RailsHealthChecks
       sidekiq:     -> { Checks::SidekiqCheck.new(queue_size: RailsHealthChecks.configuration.sidekiq_queue_size) },
       solid_queue: -> { Checks::SolidQueueCheck.new(job_count: RailsHealthChecks.configuration.solid_queue_job_count) },
       good_job:    -> { Checks::GoodJobCheck.new(latency: RailsHealthChecks.configuration.good_job_latency) },
-      resque:      -> { Checks::ResqueCheck.new(queue_size: RailsHealthChecks.configuration.resque_queue_size) }
+      resque:      -> { Checks::ResqueCheck.new(queue_size: RailsHealthChecks.configuration.resque_queue_size) },
+      disk:        -> { Checks::DiskCheck.new(
+        warn_threshold:     RailsHealthChecks.configuration.disk_warn_threshold,
+        critical_threshold: RailsHealthChecks.configuration.disk_critical_threshold,
+        path:               RailsHealthChecks.configuration.disk_path
+      ) }
     }.freeze
 
     def self.build(check_names)

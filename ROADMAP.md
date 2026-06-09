@@ -9,7 +9,7 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 > Host-level visibility and protection against hammering dependencies on every request.
 
 **Built-in checks:**
-- `disk_space` — free disk bytes vs configurable warn/critical thresholds
+- ~~`disk_space` — free disk bytes vs configurable warn/critical thresholds~~ ✓ shipped as `:disk`
 - `memory` — process RSS vs configurable threshold
 - `http` — arbitrary external URL with configurable expected status code
 
