@@ -4,17 +4,6 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 
 ---
 
-## [0.2.0] — Authentication & Authorization
-
-> Protect health endpoints from public exposure.
-
-- **IP allowlist** — `config.allowed_ips = ['127.0.0.1', '10.0.0.0/8']`
-- **Bearer token** — `config.token = ENV['HEALTH_TOKEN']` (via `Authorization: Bearer <token>` header)
-- **Custom block** — `config.authenticate { |request| request.ip == '...' }`
-- Unauthenticated requests return `401 Unauthorized`
-
----
-
 ## [0.3.0] — Cache & Queue Checks
 
 > Cover the most common production dependencies.

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Bearer token authentication via `config.token = ENV["HEALTH_TOKEN"]` (checked via `Authorization: Bearer <token>` header)
+- IP allowlist authentication via `config.allowed_ips = ["127.0.0.1", "10.0.0.0/8"]` (CIDR ranges supported)
+- Custom authentication block via `config.authenticate { |request| ... }`
+- Unauthenticated requests return `401 Unauthorized`; no auth configured means public access
+
 ## [0.1.0] - 2026-06-08
 
 ### Added
