@@ -4,17 +4,6 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 
 ---
 
-## [0.3.0] — Cache & Queue Checks
-
-> Cover the most common production dependencies.
-
-**Built-in checks:**
-- `resque` — Resque connectivity and queue depth threshold
-
-Checks for non-installed adapters raise a descriptive error at boot, not at request time.
-
----
-
 ## [0.4.0] — System Checks & Result Caching
 
 > Host-level visibility and protection against hammering dependencies on every request.

@@ -130,6 +130,7 @@ The block receives the `ActionDispatch::Request` object and must return a truthy
 | `:sidekiq` | Sidekiq Redis connectivity; optional `config.sidekiq_queue_size` threshold for queue depth |
 | `:solid_queue` | Solid Queue DB connectivity; optional `config.solid_queue_job_count` threshold for pending jobs |
 | `:good_job` | GoodJob queue latency; optional `config.good_job_latency` (seconds) threshold for oldest pending job |
+| `:resque` | Resque Redis connectivity; optional `config.resque_queue_size` threshold for total queue depth |
 
 [↑ Back to top](#table-of-contents)
 
