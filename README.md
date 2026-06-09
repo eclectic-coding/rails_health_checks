@@ -13,6 +13,7 @@ A Rails engine providing structured, pluggable health check endpoints for monito
 - [Installation](#installation)
 - [Endpoints](#endpoints)
 - [Configuration](#configuration)
+- [Authentication](#authentication)
 - [Built-in Checks](#built-in-checks)
 - [Contributing](#contributing)
 - [License](#license)
@@ -79,6 +80,42 @@ RailsHealthChecks.configure do |config|
   config.timeout = 5            # global timeout per check in seconds (default: 5)
 end
 ```
+
+[↑ Back to top](#table-of-contents)
+
+---
+
+## Authentication
+
+By default health endpoints are public. Use one of the following strategies to restrict access. Unauthenticated requests receive `401 Unauthorized`.
+
+### Bearer token
+
+```ruby
+RailsHealthChecks.configure do |config|
+  config.token = ENV["HEALTH_TOKEN"]
+end
+```
+
+Requests must include `Authorization: Bearer <token>`.
+
+### IP allowlist
+
+```ruby
+RailsHealthChecks.configure do |config|
+  config.allowed_ips = ["127.0.0.1", "10.0.0.0/8"]  # exact IPs or CIDR ranges
+end
+```
+
+### Custom block
+
+```ruby
+RailsHealthChecks.configure do |config|
+  config.authenticate { |request| request.headers["X-Internal"] == "true" }
+end
+```
+
+The block receives the `ActionDispatch::Request` object and must return a truthy value to allow access.
 
 [↑ Back to top](#table-of-contents)
 
