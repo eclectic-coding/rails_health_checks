@@ -1,16 +1,22 @@
 # frozen_string_literal: true
 
 module RailsHealthChecks
+  class ConfigurationError < StandardError; end
+
   class Configuration
+    BUILT_IN_NAMES = %i[database cache sidekiq solid_queue good_job resque disk memory http].freeze
+
     attr_writer :checks
-    attr_accessor :timeout, :allowed_ips, :token, :sidekiq_queue_size, :solid_queue_job_count, :good_job_latency,
+    attr_accessor :timeout, :cache_duration, :allowed_ips, :token,
+                  :sidekiq_queue_size, :solid_queue_job_count, :good_job_latency,
                   :resque_queue_size, :disk_warn_threshold, :disk_critical_threshold, :disk_path,
-                  :memory_threshold, :http_url, :http_expected_status
+                  :memory_threshold, :http_url, :http_expected_status, :http_headers
     attr_reader :authenticate_block, :custom_checks, :groups
 
     def initialize
       @checks = [:database]
       @timeout = 5
+      @cache_duration = nil
       @allowed_ips = nil
       @token = nil
       @authenticate_block = nil
@@ -24,6 +30,7 @@ module RailsHealthChecks
       @memory_threshold = nil
       @http_url = nil
       @http_expected_status = 200
+      @http_headers = {}
       @custom_checks = {}
       @groups = {}
       @disabled_checks = {}
@@ -52,6 +59,19 @@ module RailsHealthChecks
       check.timeout = timeout
       @custom_checks[name] = check
       @checks << name unless @checks.include?(name)
+    end
+
+    def validate!
+      all_checks = @checks + @groups.values.flatten
+      all_checks.uniq.each do |name|
+        next if BUILT_IN_NAMES.include?(name) || @custom_checks.key?(name)
+
+        raise ConfigurationError, "Unknown check :#{name}. Built-ins: #{BUILT_IN_NAMES.join(', ')}"
+      end
+
+      if @checks.include?(:http) && @http_url.nil?
+        raise ConfigurationError, "config.checks includes :http but config.http_url is not set"
+      end
     end
   end
 end

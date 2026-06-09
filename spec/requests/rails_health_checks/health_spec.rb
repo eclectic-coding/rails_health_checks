@@ -105,6 +105,71 @@ RSpec.describe 'Health endpoints', type: :request do
     end
   end
 
+  describe 'HEAD /health' do
+    it 'returns 200 with no body' do
+      head '/health'
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to be_empty
+    end
+
+    context 'when the database check fails' do
+      before do
+        allow(ActiveRecord::Base.connection).to receive(:execute).and_raise(StandardError, 'connection refused')
+      end
+
+      it 'returns 503 with no body' do
+        head '/health'
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.body).to be_empty
+      end
+    end
+  end
+
+  describe 'HEAD /health/live' do
+    it 'returns 200 with no body' do
+      head '/health/live'
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to be_empty
+    end
+  end
+
+  describe 'result caching' do
+    after { RailsHealthChecks.instance_variable_set(:@result_cache, nil) }
+
+    context 'when cache_duration is set' do
+      before do
+        RailsHealthChecks.configure { |c| c.cache_duration = 60 }
+      end
+
+      after { RailsHealthChecks.instance_variable_set(:@configuration, nil) }
+
+      it 'returns the same result without re-running checks on a second request' do
+        call_count = 0
+        allow(ActiveRecord::Base.connection).to receive(:execute) { call_count += 1 }
+
+        get '/health'
+        get '/health'
+
+        expect(call_count).to eq(1)
+      end
+    end
+
+    context 'when cache_duration is nil (default)' do
+      it 're-runs checks on every request' do
+        call_count = 0
+        allow(ActiveRecord::Base.connection).to receive(:execute) { call_count += 1 }
+
+        get '/health'
+        get '/health'
+
+        expect(call_count).to eq(2)
+      end
+    end
+  end
+
   describe 'GET /health/live' do
     context 'when all checks pass' do
       it 'returns 200 with OK text' do

@@ -17,6 +17,7 @@ require "rails_health_checks/checks/http_check"
 require "rails_health_checks/check_registry"
 require "rails_health_checks/response_builder"
 require "rails_health_checks/prometheus_formatter"
+require "rails_health_checks/result_cache"
 
 module RailsHealthChecks
   class << self
@@ -26,6 +27,10 @@ module RailsHealthChecks
 
     def configuration
       @configuration ||= Configuration.new
+    end
+
+    def result_cache
+      @result_cache ||= ResultCache.new
     end
   end
 end

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Result caching: `config.cache_duration = N` (seconds) caches check results in memory, avoiding re-running expensive checks on every request; disabled by default; keyed per check set so group endpoints cache independently; thread-safe
+- HEAD request support on `GET /health` and `GET /health/live` for load balancer compatibility
+- HTTP check custom headers: `config.http_headers = { "Authorization" => "Bearer ..." }` allows probing authenticated endpoints
+- Boot-time configuration validation: raises `RailsHealthChecks::ConfigurationError` at app startup for unknown check names, `:http` check without `http_url`, and groups referencing missing checks
+
 ## [0.6.0] - 2026-06-09
 
 ### Added

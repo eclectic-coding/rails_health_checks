@@ -4,6 +4,17 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 
 ---
 
+## [0.7.0] — Production Polish
+
+> Small features that close real production pain points before 1.0.0.
+
+- **Result caching** — `config.cache_duration = N` (seconds) avoids re-running expensive checks on every request; default off; keyed per check set so groups cache independently
+- **HEAD request support** — verify and document HEAD on `GET /health` and `GET /health/live` for load balancer compatibility
+- **HTTP check custom headers** — `config.http_headers = { "Authorization" => "Bearer ..." }` enables probing authenticated endpoints
+- **Boot-time config validation** — raises `ConfigurationError` at startup for unknown check names, `:http` with no `http_url`, and groups referencing missing checks
+
+---
+
 ## [1.0.0] — Stable
 
 > Production-hardened, fully documented, and migration-friendly.
