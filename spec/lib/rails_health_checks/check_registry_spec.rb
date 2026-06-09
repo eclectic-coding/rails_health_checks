@@ -125,6 +125,38 @@ RSpec.describe RailsHealthChecks::CheckRegistry do
       end
     end
 
+    context "ActiveSupport::Notifications" do
+      it "publishes health_check.rails_health_checks with status and check results" do
+        events = []
+        subscription = ActiveSupport::Notifications.subscribe("health_check.rails_health_checks") do |*args|
+          events << ActiveSupport::Notifications::Event.new(*args)
+        end
+
+        described_class.run(checks, timeout: 5)
+
+        expect(events.length).to eq(1)
+        payload = events.first.payload
+        expect(payload[:status]).to eq("ok")
+        expect(payload[:checks]).to have_key(:database)
+        expect(payload[:checks][:database][:status]).to eq("ok")
+      ensure
+        ActiveSupport::Notifications.unsubscribe(subscription)
+      end
+
+      it "includes duration information for subscribers" do
+        events = []
+        subscription = ActiveSupport::Notifications.subscribe("health_check.rails_health_checks") do |*args|
+          events << ActiveSupport::Notifications::Event.new(*args)
+        end
+
+        described_class.run(checks, timeout: 5)
+
+        expect(events.first.duration).to be > 0
+      ensure
+        ActiveSupport::Notifications.unsubscribe(subscription)
+      end
+    end
+
     context "when a check has a per-check timeout" do
       let(:slow_check) do
         Class.new(RailsHealthChecks::Check) do

@@ -15,6 +15,7 @@ A Rails engine providing structured, pluggable health check endpoints for monito
 - [Configuration](#configuration)
 - [Authentication](#authentication)
 - [Built-in Checks](#built-in-checks)
+- [Notifications](#notifications)
 - [Per-Environment Toggling](#per-environment-toggling)
 - [Check Groups](#check-groups)
 - [Custom Checks](#custom-checks)
@@ -137,6 +138,24 @@ The block receives the `ActionDispatch::Request` object and must return a truthy
 | `:disk` | Free disk bytes via `df`; optional `config.disk_warn_threshold` / `config.disk_critical_threshold` (bytes) and `config.disk_path` (default: `/`) |
 | `:memory` | Process RSS via `ps`; optional `config.memory_threshold` (bytes) reports `degraded` when exceeded |
 | `:http` | HTTP GET to `config.http_url`; reports `critical` if response code differs from `config.http_expected_status` (default: `200`) or a network error occurs |
+
+[↑ Back to top](#table-of-contents)
+
+---
+
+## Notifications
+
+Every health check run publishes an `ActiveSupport::Notifications` event:
+
+```ruby
+ActiveSupport::Notifications.subscribe("health_check.rails_health_checks") do |*args|
+  event = ActiveSupport::Notifications::Event.new(*args)
+  Rails.logger.info "Health check: #{event.payload[:status]} (#{event.duration.round}ms)"
+  # event.payload[:checks] => { database: { status: "ok", latency_ms: 3 }, ... }
+end
+```
+
+The payload includes `status` (overall: `ok`/`degraded`/`critical`) and `checks` (per-check hash with `status`, `latency_ms`, and `message` when present). Duration is measured over the entire parallel check run.
 
 [↑ Back to top](#table-of-contents)
 
