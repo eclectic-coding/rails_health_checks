@@ -16,6 +16,7 @@ A Rails engine providing structured, pluggable health check endpoints for monito
 - [Authentication](#authentication)
 - [Built-in Checks](#built-in-checks)
 - [Notifications](#notifications)
+- [Prometheus Metrics](#prometheus-metrics)
 - [Per-Environment Toggling](#per-environment-toggling)
 - [Check Groups](#check-groups)
 - [Custom Checks](#custom-checks)
@@ -54,8 +55,9 @@ mount RailsHealthChecks::Engine => "/health"
 |----------|--------|----------|
 | `GET /health` | JSON | Monitoring dashboards, detailed diagnostics |
 | `GET /health/live` | Plain text | Load balancer liveness probes |
+| `GET /health/metrics` | Prometheus text | Prometheus / OpenMetrics scraping |
 
-HTTP status is `200 OK` when all checks pass, `503 Service Unavailable` otherwise.
+HTTP status is `200 OK` when all checks pass, `503 Service Unavailable` otherwise (except `/metrics` which always returns `200`).
 
 ### JSON response shape
 
@@ -156,6 +158,26 @@ end
 ```
 
 The payload includes `status` (overall: `ok`/`degraded`/`critical`) and `checks` (per-check hash with `status`, `latency_ms`, and `message` when present). Duration is measured over the entire parallel check run.
+
+[↑ Back to top](#table-of-contents)
+
+---
+
+## Prometheus Metrics
+
+`GET /health/metrics` returns Prometheus text exposition format (`text/plain; version=0.0.4`). This endpoint always returns HTTP 200 — Prometheus convention is that scrape targets should always respond successfully, with check state encoded in metric values.
+
+```
+# HELP rails_health_check_status Health check status (0=ok, 1=degraded, 2=critical)
+# TYPE rails_health_check_status gauge
+rails_health_check_status{check="database"} 0
+rails_health_check_status{check="cache"} 0
+
+# HELP rails_health_check_latency_ms Health check latency in milliseconds
+# TYPE rails_health_check_latency_ms gauge
+rails_health_check_latency_ms{check="database"} 4
+rails_health_check_latency_ms{check="cache"} 2
+```
 
 [↑ Back to top](#table-of-contents)
 

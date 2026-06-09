@@ -16,6 +16,7 @@ require "rails_health_checks/checks/memory_check"
 require "rails_health_checks/checks/http_check"
 require "rails_health_checks/check_registry"
 require "rails_health_checks/response_builder"
+require "rails_health_checks/prometheus_formatter"
 
 module RailsHealthChecks
   class << self
