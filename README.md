@@ -199,7 +199,11 @@ RailsHealthChecks.configure do |config|
 end
 ```
 
-`config.register` automatically adds the check to the active checks list. Use `pass`, `warn_with`, and `fail_with` (inherited from `Check`) to set status, and `measure { }` to record latency.
+`config.register` automatically adds the check to the active checks list. Pass `timeout:` to override the global timeout for this check only:
+
+```ruby
+config.register :slow_api, MyApiCheck.new, timeout: 10
+``` Use `pass`, `warn_with`, and `fail_with` (inherited from `Check`) to set status, and `measure { }` to record latency.
 
 [↑ Back to top](#table-of-contents)
 

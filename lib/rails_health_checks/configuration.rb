@@ -48,7 +48,8 @@ module RailsHealthChecks
       @groups[name] = check_names
     end
 
-    def register(name, check)
+    def register(name, check, timeout: nil)
+      check.timeout = timeout
       @custom_checks[name] = check
       @checks << name unless @checks.include?(name)
     end
