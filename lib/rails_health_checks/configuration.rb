@@ -2,7 +2,7 @@
 
 module RailsHealthChecks
   class Configuration
-    attr_accessor :checks, :timeout, :allowed_ips, :token, :sidekiq_queue_size
+    attr_accessor :checks, :timeout, :allowed_ips, :token, :sidekiq_queue_size, :solid_queue_job_count
     attr_reader :authenticate_block
 
     def initialize
@@ -12,6 +12,7 @@ module RailsHealthChecks
       @token = nil
       @authenticate_block = nil
       @sidekiq_queue_size = nil
+      @solid_queue_job_count = nil
     end
 
     def authenticate(&block)
