@@ -50,6 +50,12 @@ RSpec.describe RailsHealthChecks::CheckRegistry do
       expect(result[:memory]).to be_a(RailsHealthChecks::Checks::MemoryCheck)
     end
 
+    it "builds an http check" do
+      RailsHealthChecks.configuration.http_url = "http://example.com"
+      result = described_class.build([:http])
+      expect(result[:http]).to be_a(RailsHealthChecks::Checks::HttpCheck)
+    end
+
     it "builds a disk check" do
       result = described_class.build([:disk])
       expect(result[:disk]).to be_a(RailsHealthChecks::Checks::DiskCheck)

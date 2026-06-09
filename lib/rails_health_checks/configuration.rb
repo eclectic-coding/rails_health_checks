@@ -4,7 +4,7 @@ module RailsHealthChecks
   class Configuration
     attr_accessor :checks, :timeout, :allowed_ips, :token, :sidekiq_queue_size, :solid_queue_job_count, :good_job_latency,
                   :resque_queue_size, :disk_warn_threshold, :disk_critical_threshold, :disk_path,
-                  :memory_threshold
+                  :memory_threshold, :http_url, :http_expected_status
     attr_reader :authenticate_block
 
     def initialize
@@ -21,6 +21,8 @@ module RailsHealthChecks
       @disk_critical_threshold = nil
       @disk_path = "/"
       @memory_threshold = nil
+      @http_url = nil
+      @http_expected_status = 200
     end
 
     def authenticate(&block)

@@ -12,6 +12,10 @@ module RailsHealthChecks
       good_job:    -> { Checks::GoodJobCheck.new(latency: RailsHealthChecks.configuration.good_job_latency) },
       resque:      -> { Checks::ResqueCheck.new(queue_size: RailsHealthChecks.configuration.resque_queue_size) },
       memory:      -> { Checks::MemoryCheck.new(threshold: RailsHealthChecks.configuration.memory_threshold) },
+      http:        -> { Checks::HttpCheck.new(
+        url:             RailsHealthChecks.configuration.http_url,
+        expected_status: RailsHealthChecks.configuration.http_expected_status
+      ) },
       disk:        -> { Checks::DiskCheck.new(
         warn_threshold:     RailsHealthChecks.configuration.disk_warn_threshold,
         critical_threshold: RailsHealthChecks.configuration.disk_critical_threshold,
