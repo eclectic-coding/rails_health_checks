@@ -82,6 +82,7 @@ config.disable :disk_space, in: :test
 > Production-hardened, fully documented, and migration-friendly.
 
 - Complete README: configuration reference, all built-in checks, custom check authoring guide
+- `rails generate rails_health_checks:initializer` — generates a commented `config/initializers/rails_health_checks.rb` with all available options
 - Migration guide from `okcomputer` (check name mappings)
 - Rails 8.1+ compatibility locked in CI matrix
 - Performance benchmarks
