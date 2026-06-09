@@ -6,6 +6,7 @@ require "rails_health_checks/configuration"
 require "rails_health_checks/authentication"
 require "rails_health_checks/check"
 require "rails_health_checks/checks/database_check"
+require "rails_health_checks/checks/cache_check"
 require "rails_health_checks/check_registry"
 require "rails_health_checks/response_builder"
 

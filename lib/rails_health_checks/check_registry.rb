@@ -5,7 +5,8 @@ require "timeout"
 module RailsHealthChecks
   class CheckRegistry
     BUILT_INS = {
-      database: -> { Checks::DatabaseCheck.new }
+      database: -> { Checks::DatabaseCheck.new },
+      cache:    -> { Checks::CacheCheck.new }
     }.freeze
 
     def self.build(check_names)

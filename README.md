@@ -76,7 +76,7 @@ Status values: `ok` | `degraded` | `critical`. Overall status is `critical` if a
 ```ruby
 # config/initializers/rails_health_checks.rb
 RailsHealthChecks.configure do |config|
-  config.checks  = [:database]  # checks to run (default: [:database])
+  config.checks  = [:database, :cache]  # checks to run (default: [:database])
   config.timeout = 5            # global timeout per check in seconds (default: 5)
 end
 ```
@@ -126,6 +126,7 @@ The block receives the `ActionDispatch::Request` object and must return a truthy
 | Check | Description |
 |-------|-------------|
 | `:database` | ActiveRecord `SELECT 1` against the primary connection, includes latency |
+| `:cache` | `Rails.cache` read/write probe; works with Redis, Memcached, or in-process store |
 
 [↑ Back to top](#table-of-contents)
 
