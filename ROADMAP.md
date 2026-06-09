@@ -8,8 +8,6 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 
 > Production-hardened, fully documented, and migration-friendly.
 
-- Complete README: configuration reference, all built-in checks, custom check authoring guide
-- Migration guide from `okcomputer` (check name mappings)
 - Rails 8.1+ compatibility locked in CI matrix
 - Performance benchmarks
 - CHANGELOG complete

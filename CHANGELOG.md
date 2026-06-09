@@ -9,12 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Built-in `:smtp` check that verifies mail server connectivity via `Net::SMTP` (stdlib, no extra gems); automatically reads `ActionMailer::Base.smtp_settings` when no explicit config is provided; optional `config.smtp_address` and `config.smtp_port` override the defaults (fallback: `localhost:25`)
-
-### Added
 - Built-in `:redis` check that pings a Redis server directly, independent of any job queue gem; requires the `redis` gem in the host app; optional `config.redis_url` overrides the `REDIS_URL` env var (default: `redis://localhost:6379/0`)
-
-### Added
 - `rails generate rails_health_checks:initializer` — generates a fully commented `config/initializers/rails_health_checks.rb` in the host app with all available configuration options documented inline
+- Complete configuration reference table in README covering all config options with types, defaults, and descriptions
+- Custom check authoring guide in README: full `Check` API reference (`pass`, `warn_with`, `fail_with`, `measure`), state contract, and testing patterns
+- `MIGRATING_FROM_OKCOMPUTER.md`: complete migration guide from OkComputer with check name mappings, configuration translation, custom check migration, and response format differences
 
 ## [0.7.0] - 2026-06-09
 
