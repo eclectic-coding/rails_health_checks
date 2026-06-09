@@ -4,20 +4,6 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 
 ---
 
-## [0.4.0] — System Checks & Result Caching
-
-> Host-level visibility and protection against hammering dependencies on every request.
-
-**Built-in checks:**
-- `http` — arbitrary external URL with configurable expected status code
-
-**Result caching:**
-- `config.cache_ttl = 30` — cache check results for N seconds (default: off)
-- Cached responses include `"cached": true` in the JSON payload
-- Uses `Rails.cache` when available; falls back to an in-process store
-
----
-
 ## [0.5.0] — Custom Checks & Composite Groups
 
 > First-class extensibility for host applications.

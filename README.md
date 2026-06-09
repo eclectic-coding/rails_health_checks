@@ -133,6 +133,7 @@ The block receives the `ActionDispatch::Request` object and must return a truthy
 | `:resque` | Resque Redis connectivity; optional `config.resque_queue_size` threshold for total queue depth |
 | `:disk` | Free disk bytes via `df`; optional `config.disk_warn_threshold` / `config.disk_critical_threshold` (bytes) and `config.disk_path` (default: `/`) |
 | `:memory` | Process RSS via `ps`; optional `config.memory_threshold` (bytes) reports `degraded` when exceeded |
+| `:http` | HTTP GET to `config.http_url`; reports `critical` if response code differs from `config.http_expected_status` (default: `200`) or a network error occurs |
 
 [↑ Back to top](#table-of-contents)
 
