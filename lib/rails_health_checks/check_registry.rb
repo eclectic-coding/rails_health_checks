@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "timeout"
+require "concurrent"
 
 module RailsHealthChecks
   class CheckRegistry
@@ -38,7 +39,10 @@ module RailsHealthChecks
     end
 
     def self.run(checks, timeout:)
-      checks.transform_values { |check| run_check(check, timeout: timeout) }
+      futures = checks.transform_values { |check| Concurrent::Future.execute { run_check(check, timeout: timeout) } }
+      checks.each_with_object({}) do |(name, check), results|
+        results[name] = futures[name].value(timeout + 1) || mark_critical(check, "timed out")
+      end
     end
 
     def self.run_check(check, timeout:)

@@ -124,5 +124,30 @@ RSpec.describe RailsHealthChecks::CheckRegistry do
         expect(results[:database].message).to eq("connection refused")
       end
     end
+
+    context "with multiple checks running in parallel" do
+      let(:slow_check_class) do
+        Class.new(RailsHealthChecks::Check) do
+          def call
+            sleep 0.1
+            pass "done"
+          end
+        end
+      end
+
+      it "completes faster than sequential execution would allow" do
+        checks = 4.times.each_with_object({}) do |i, h|
+          h[:"check_#{i}"] = slow_check_class.new
+        end
+
+        t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        described_class.run(checks, timeout: 5)
+        elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0
+
+        # 4 checks × 0.1s each = 0.4s sequential; parallel should finish well under that
+        expect(elapsed).to be < 0.35
+        checks.each_value { |c| expect(c.status).to eq("ok") }
+      end
+    end
   end
 end
