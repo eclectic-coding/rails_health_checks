@@ -8,8 +8,12 @@ Gem::Specification.new do |spec|
   spec.authors     = ['Chuck Smith']
   spec.email       = ['chuck@eclecticcoding.com']
   spec.homepage    = 'https://github.com/eclectic-coding/rails_health_checks'
-  spec.summary     = 'Health check endpoints for Rails applications.'
-  spec.description = 'A Rails engine providing configurable health check endpoints for monitoring application status.'
+  spec.summary     = 'Production-grade health check endpoints for Rails applications.'
+  spec.description = 'A Rails engine that adds structured, pluggable health check endpoints to any Rails app. ' \
+                     'Includes 11 built-in checks (database, cache, Redis, SMTP, Sidekiq, SolidQueue, GoodJob, ' \
+                     'Resque, disk, memory, HTTP), parallel execution via Concurrent::Future, result caching, ' \
+                     'Prometheus metrics, check groups, per-environment toggling, boot-time validation, ' \
+                     'and a Prometheus-compatible /metrics endpoint. Drop-in replacement for OkComputer.'
   spec.license     = 'MIT'
   spec.required_ruby_version = '>= 3.3'
 

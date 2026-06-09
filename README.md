@@ -6,7 +6,18 @@
 [![ruby](https://img.shields.io/badge/ruby-%3E%3D%203.3-ruby.svg)](https://www.ruby-lang.org)
 [![codecov](https://codecov.io/gh/eclectic-coding/rails_health_checks/branch/main/graph/badge.svg)](https://codecov.io/gh/eclectic-coding/rails_health_checks)
 
-A Rails engine providing structured, pluggable health check endpoints for monitoring application status. Goes beyond Rails' built-in `/up` endpoint with per-check diagnostics, latency tracking, and a configurable check registry.
+A Rails engine that adds production-grade health check endpoints to any Rails app. Goes well beyond the built-in `/up` endpoint with 11 built-in checks, parallel execution, structured JSON responses, Prometheus metrics, and a clean configuration DSL.
+
+**Built-in checks:** database · cache · Redis · SMTP · Sidekiq · SolidQueue · GoodJob · Resque · disk · memory · HTTP
+
+**Key features:**
+- Parallel check execution via `Concurrent::Future` — response time bounded by the slowest check, not the sum
+- Result caching (`config.cache_duration`) to absorb high-frequency probe traffic
+- Prometheus text exposition at `GET /health/metrics` (always HTTP 200)
+- Check groups (`config.group`) expose subsets at `/health/:group`
+- Per-environment toggling, boot-time validation, and bearer token / IP / custom auth
+- `rails generate rails_health_checks:initializer` scaffolds a fully-commented config file
+- Drop-in replacement for OkComputer — see [MIGRATING_FROM_OKCOMPUTER.md](MIGRATING_FROM_OKCOMPUTER.md)
 
 ## Table of Contents
 
