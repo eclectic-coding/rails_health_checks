@@ -45,6 +45,12 @@ Mount the engine in `config/routes.rb`:
 mount RailsHealthChecks::Engine => "/health"
 ```
 
+Generate a commented initializer with all available options:
+
+```bash
+rails generate rails_health_checks:initializer
+```
+
 [↑ Back to top](#table-of-contents)
 
 ---

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `rails generate rails_health_checks:initializer` — generates a fully commented `config/initializers/rails_health_checks.rb` in the host app with all available configuration options documented inline
+
 ## [0.7.0] - 2026-06-09
 
 ### Added
