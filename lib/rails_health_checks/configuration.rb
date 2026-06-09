@@ -4,11 +4,12 @@ module RailsHealthChecks
   class ConfigurationError < StandardError; end
 
   class Configuration
-    BUILT_IN_NAMES = %i[database cache redis sidekiq solid_queue good_job resque disk memory http].freeze
+    BUILT_IN_NAMES = %i[database cache redis sidekiq solid_queue good_job resque disk memory http smtp].freeze
 
     attr_writer :checks
     attr_accessor :timeout, :cache_duration, :allowed_ips, :token,
                   :redis_url,
+                  :smtp_address, :smtp_port,
                   :sidekiq_queue_size, :solid_queue_job_count, :good_job_latency,
                   :resque_queue_size, :disk_warn_threshold, :disk_critical_threshold, :disk_path,
                   :memory_threshold, :http_url, :http_expected_status, :http_headers
@@ -22,6 +23,8 @@ module RailsHealthChecks
       @token = nil
       @authenticate_block = nil
       @redis_url = nil
+      @smtp_address = nil
+      @smtp_port = nil
       @sidekiq_queue_size = nil
       @solid_queue_job_count = nil
       @good_job_latency = nil
