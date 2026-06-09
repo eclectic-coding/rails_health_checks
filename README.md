@@ -128,6 +128,7 @@ The block receives the `ActionDispatch::Request` object and must return a truthy
 | `:database` | ActiveRecord `SELECT 1` against the primary connection, includes latency |
 | `:cache` | `Rails.cache` read/write probe; works with Redis, Memcached, or in-process store |
 | `:sidekiq` | Sidekiq Redis connectivity; optional `config.sidekiq_queue_size` threshold for queue depth |
+| `:solid_queue` | Solid Queue DB connectivity; optional `config.solid_queue_job_count` threshold for pending jobs |
 
 [↑ Back to top](#table-of-contents)
 

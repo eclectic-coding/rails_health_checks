@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Built-in `cache` check using `Rails.cache` read/write probe; works with Redis, Memcached, or in-process store
 - Built-in `sidekiq` check verifying Redis connectivity; optional `config.sidekiq_queue_size` threshold reports `degraded` when total queue depth exceeds it
+- Built-in `solid_queue` check verifying DB connectivity via `SolidQueue::ReadyExecution.count`; optional `config.solid_queue_job_count` threshold reports `degraded` when pending jobs exceed it
 
 ## [0.2.0] - 2026-06-09
 
