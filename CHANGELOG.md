@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - Unreleased
+
+### Added
+- Built-in `disk` check using `df -Pk` to measure free disk bytes; optional `config.disk_warn_threshold` reports `degraded` and `config.disk_critical_threshold` reports `critical` when free space falls below the configured byte thresholds; `config.disk_path` selects the mount point to check (default: `/`)
+
 ## [0.3.0] - 2026-06-09
 
 ### Added
