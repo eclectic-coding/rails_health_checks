@@ -10,6 +10,7 @@ require "rails_health_checks/checks/cache_check"
 require "rails_health_checks/checks/sidekiq_check"
 require "rails_health_checks/checks/solid_queue_check"
 require "rails_health_checks/checks/good_job_check"
+require "rails_health_checks/checks/resque_check"
 require "rails_health_checks/check_registry"
 require "rails_health_checks/response_builder"
 
