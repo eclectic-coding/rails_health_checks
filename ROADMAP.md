@@ -9,7 +9,6 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 > Cover the most common production dependencies.
 
 **Built-in checks:**
-- `good_job` — GoodJob queue latency check
 - `resque` — Resque connectivity and queue depth threshold
 
 Checks for non-installed adapters raise a descriptive error at boot, not at request time.
