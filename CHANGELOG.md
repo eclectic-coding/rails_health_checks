@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - Unreleased
+
+### Added
+- Parallel check execution via `Concurrent::Future` — all checks now run concurrently, reducing total response time from the sum of check latencies to roughly the slowest single check; `concurrent-ruby` is a transitive Rails dependency and requires no additional gem
+
 ## [0.5.0] - 2026-06-09
 
 ### Added
