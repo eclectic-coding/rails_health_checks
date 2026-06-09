@@ -12,3 +12,8 @@ Bundler::Audit::Task.new
 RSpec::Core::RakeTask.new(:spec)
 
 task default: [:lint, :'bundle:audit:update', 'bundle:audit:check', :spec]
+
+desc "Run performance benchmarks"
+task :benchmark do
+  ruby "benchmarks/benchmark.rb"
+end

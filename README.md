@@ -25,6 +25,7 @@ A Rails engine providing structured, pluggable health check endpoints for monito
   - [Check API](#check-api)
   - [Testing Custom Checks](#testing-custom-checks)
 - [Migrating from OkComputer](#migrating-from-okcomputer)
+- [Performance](#performance)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -492,6 +493,18 @@ Quick reference:
 | `OkComputer::CustomCheck` subclass | Subclass `RailsHealthChecks::Check` |
 | `GET /okcomputer` | `GET /health` |
 | `GET /okcomputer/all` | `GET /health` |
+
+[↑ Back to top](#table-of-contents)
+
+---
+
+## Performance
+
+See [BENCHMARKS.md](BENCHMARKS.md) for throughput numbers, parallel execution speedup, and cache effectiveness measurements. To run the suite locally:
+
+```bash
+bundle exec rake benchmark
+```
 
 [↑ Back to top](#table-of-contents)
 
