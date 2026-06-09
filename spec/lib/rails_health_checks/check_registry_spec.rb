@@ -45,6 +45,16 @@ RSpec.describe RailsHealthChecks::CheckRegistry do
       expect(result[:sidekiq]).to be_a(RailsHealthChecks::Checks::SidekiqCheck)
     end
 
+    it "builds a memory check" do
+      result = described_class.build([:memory])
+      expect(result[:memory]).to be_a(RailsHealthChecks::Checks::MemoryCheck)
+    end
+
+    it "builds a disk check" do
+      result = described_class.build([:disk])
+      expect(result[:disk]).to be_a(RailsHealthChecks::Checks::DiskCheck)
+    end
+
     it "raises ArgumentError for unknown check names" do
       expect { described_class.build([:unknown]) }
         .to raise_error(ArgumentError, /Unknown check: unknown/)
