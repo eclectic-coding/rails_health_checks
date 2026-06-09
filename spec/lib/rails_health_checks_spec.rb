@@ -79,6 +79,16 @@ RSpec.describe RailsHealthChecks do
         expect(described_class.configuration.checks).to include(:my_check)
       end
 
+      it "sets a per-check timeout on the check object" do
+        described_class.configure { |c| c.register(:my_check, custom_check, timeout: 10) }
+        expect(described_class.configuration.custom_checks[:my_check].timeout).to eq(10)
+      end
+
+      it "leaves timeout nil when not specified" do
+        described_class.configure { |c| c.register(:my_check, custom_check) }
+        expect(described_class.configuration.custom_checks[:my_check].timeout).to be_nil
+      end
+
       it "does not duplicate the name in config.checks when called twice" do
         described_class.configure do |c|
           c.register(:my_check, custom_check)

@@ -125,6 +125,20 @@ RSpec.describe RailsHealthChecks::CheckRegistry do
       end
     end
 
+    context "when a check has a per-check timeout" do
+      let(:slow_check) do
+        Class.new(RailsHealthChecks::Check) do
+          def call = (sleep 10) && pass("done")
+        end.new.tap { |c| c.timeout = 1 }
+      end
+
+      it "uses the check's own timeout instead of the global one" do
+        results = described_class.run({ slow: slow_check }, timeout: 30)
+        expect(results[:slow].status).to eq("critical")
+        expect(results[:slow].message).to eq("timed out")
+      end
+    end
+
     context "with multiple checks running in parallel" do
       let(:slow_check_class) do
         Class.new(RailsHealthChecks::Check) do

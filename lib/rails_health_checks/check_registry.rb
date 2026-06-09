@@ -39,9 +39,13 @@ module RailsHealthChecks
     end
 
     def self.run(checks, timeout:)
-      futures = checks.transform_values { |check| Concurrent::Future.execute { run_check(check, timeout: timeout) } }
+      futures = checks.transform_values do |check|
+        t = check.timeout || timeout
+        Concurrent::Future.execute { run_check(check, timeout: t) }
+      end
       checks.each_with_object({}) do |(name, check), results|
-        results[name] = futures[name].value(timeout + 1) || mark_critical(check, "timed out")
+        t = check.timeout || timeout
+        results[name] = futures[name].value(t + 1) || mark_critical(check, "timed out")
       end
     end
 

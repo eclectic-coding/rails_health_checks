@@ -2,6 +2,7 @@
 
 module RailsHealthChecks
   class Check
+    attr_accessor :timeout
     attr_reader :status, :message, :latency_ms
 
     def call
