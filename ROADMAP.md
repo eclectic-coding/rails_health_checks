@@ -4,12 +4,6 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 
 ---
 
-## [0.5.0] — Custom Checks & Composite Groups
-
-> First-class extensibility for host applications.
-
----
-
 ## [0.6.0] — Async & Observability
 
 > Production performance and integration with monitoring pipelines.
