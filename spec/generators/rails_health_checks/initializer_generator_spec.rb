@@ -74,6 +74,11 @@ RSpec.describe RailsHealthChecks::Generators::InitializerGenerator do
     expect(initializer_content).to include("config.redis_url")
   end
 
+  it "includes smtp check options" do
+    expect(initializer_content).to include("config.smtp_address")
+    expect(initializer_content).to include("config.smtp_port")
+  end
+
   it "includes memory check option" do
     expect(initializer_content).to include("config.memory_threshold")
   end

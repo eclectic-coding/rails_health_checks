@@ -2,7 +2,7 @@
 
 RailsHealthChecks.configure do |config|
   # Checks to run (default: [:database])
-  # Available built-ins: :database, :cache, :redis, :sidekiq, :solid_queue,
+  # Available built-ins: :database, :cache, :redis, :smtp, :sidekiq, :solid_queue,
   #                      :good_job, :resque, :disk, :memory, :http
   config.checks = [:database]
 
@@ -41,6 +41,13 @@ RailsHealthChecks.configure do |config|
   # Redis check (requires :redis in config.checks and the redis gem)
   # ---------------------------------------------------------------------------
   # config.redis_url = ENV["REDIS_URL"]         # default: redis://localhost:6379/0
+
+  # ---------------------------------------------------------------------------
+  # SMTP check (requires :smtp in config.checks)
+  # Reads ActionMailer::Base.smtp_settings automatically if not set here.
+  # ---------------------------------------------------------------------------
+  # config.smtp_address = "smtp.example.com"  # default: ActionMailer config or localhost
+  # config.smtp_port    = 587                 # default: ActionMailer config or 25
 
   # ---------------------------------------------------------------------------
   # Disk check (requires :disk in config.checks)

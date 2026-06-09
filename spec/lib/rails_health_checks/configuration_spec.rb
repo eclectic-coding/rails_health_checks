@@ -57,5 +57,13 @@ RSpec.describe RailsHealthChecks::Configuration do
     it "defaults redis_url to nil (falls back to REDIS_URL env or localhost)" do
       expect(config.redis_url).to be_nil
     end
+
+    it "defaults smtp_address to nil (falls back to ActionMailer or localhost)" do
+      expect(config.smtp_address).to be_nil
+    end
+
+    it "defaults smtp_port to nil (falls back to ActionMailer or 25)" do
+      expect(config.smtp_port).to be_nil
+    end
   end
 end
