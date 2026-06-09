@@ -14,6 +14,13 @@ RSpec.describe RailsHealthChecks::CheckRegistry do
       expect(result[:cache]).to be_a(RailsHealthChecks::Checks::CacheCheck)
     end
 
+    it "builds a solid_queue check when SolidQueue is available" do
+      stub_const("SolidQueue", Module.new)
+      stub_const("SolidQueue::ReadyExecution", Class.new { def self.count; end })
+      result = described_class.build([:solid_queue])
+      expect(result[:solid_queue]).to be_a(RailsHealthChecks::Checks::SolidQueueCheck)
+    end
+
     it "builds a sidekiq check when Sidekiq is available" do
       stub_const("Sidekiq", Module.new { def self.redis; end })
       stub_const("Sidekiq::Queue", Class.new { def self.all; end })
