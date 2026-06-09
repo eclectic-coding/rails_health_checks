@@ -17,6 +17,21 @@ RSpec.describe RailsHealthChecks do
       expect(described_class.configuration.timeout).to eq(10)
     end
 
+    describe "config.group" do
+      it "stores check names under the group key" do
+        described_class.configure { |c| c.group(:infra, [:database, :disk]) }
+        expect(described_class.configuration.groups[:infra]).to eq([:database, :disk])
+      end
+
+      it "stores multiple groups independently" do
+        described_class.configure do |c|
+          c.group(:infra, [:database, :disk])
+          c.group(:workers, [:sidekiq])
+        end
+        expect(described_class.configuration.groups.keys).to contain_exactly(:infra, :workers)
+      end
+    end
+
     describe "config.register" do
       let(:custom_check) do
         Class.new(RailsHealthChecks::Check) do
