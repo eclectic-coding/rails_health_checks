@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MIGRATING_FROM_OKCOMPUTER.md`: complete migration guide from OkComputer with check name mappings, configuration translation, custom check migration, and response format differences
 - Rails version CI matrix: test job now runs against `Gemfile` (latest Rails) and `gemfiles/rails_8_0.gemfile` (minimum supported Rails) across Ruby 3.3 and 3.4; Ruby 4.0 tested against latest Rails only
 - Relaxed Rails dependency from `>= 8.1.3` to `>= 8.0` to support all currently-maintained Rails versions
+- Performance benchmark suite (`benchmarks/benchmark.rb`, `bundle exec rake benchmark`): measures check run throughput, parallel execution speedup, and result cache effectiveness; results documented in `BENCHMARKS.md`
 
 ## [0.7.0] - 2026-06-09
 

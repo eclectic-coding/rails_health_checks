@@ -16,3 +16,6 @@ gem "rubocop-rails"
 gem "rubocop-rails-omakase",  require: false
 gem "simplecov",              require: false
 gem "simplecov-json",         require: false
+
+gem "benchmark",     require: false
+gem "benchmark-ips", require: false
