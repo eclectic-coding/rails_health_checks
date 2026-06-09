@@ -2,8 +2,8 @@
 
 RailsHealthChecks.configure do |config|
   # Checks to run (default: [:database])
-  # Available built-ins: :database, :cache, :sidekiq, :solid_queue, :good_job,
-  #                      :resque, :disk, :memory, :http
+  # Available built-ins: :database, :cache, :redis, :sidekiq, :solid_queue,
+  #                      :good_job, :resque, :disk, :memory, :http
   config.checks = [:database]
 
   # Global timeout per check in seconds (default: 5)
@@ -36,6 +36,11 @@ RailsHealthChecks.configure do |config|
   # ---------------------------------------------------------------------------
   # config.group :system,  [:disk, :memory]
   # config.group :workers, [:sidekiq, :good_job]
+
+  # ---------------------------------------------------------------------------
+  # Redis check (requires :redis in config.checks and the redis gem)
+  # ---------------------------------------------------------------------------
+  # config.redis_url = ENV["REDIS_URL"]         # default: redis://localhost:6379/0
 
   # ---------------------------------------------------------------------------
   # Disk check (requires :disk in config.checks)
