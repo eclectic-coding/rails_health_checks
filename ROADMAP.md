@@ -8,20 +8,6 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 
 > First-class extensibility for host applications.
 
-**Custom check API:**
-```ruby
-class MyApiCheck < RailsHealthChecks::Check
-  def call
-    res = Net::HTTP.get_response(URI('https://api.example.com/status'))
-    res.code == '200' ? pass : fail_with("API returned #{res.code}")
-  end
-end
-
-RailsHealthChecks.configure do |config|
-  config.register :external_api, MyApiCheck.new
-end
-```
-
 **Composite groups:**
 ```ruby
 config.group :external_services, [:external_api, :payment_gateway]

@@ -24,11 +24,16 @@ module RailsHealthChecks
     }.freeze
 
     def self.build(check_names)
+      custom = RailsHealthChecks.configuration.custom_checks
       check_names.each_with_object({}) do |name, hash|
-        factory = BUILT_INS.fetch(name) do
-          raise ArgumentError, "Unknown check: #{name}. Available: #{BUILT_INS.keys.join(', ')}"
+        if BUILT_INS.key?(name)
+          hash[name] = BUILT_INS[name].call
+        elsif custom.key?(name)
+          hash[name] = custom[name].dup
+        else
+          available = (BUILT_INS.keys + custom.keys).join(", ")
+          raise ArgumentError, "Unknown check: #{name}. Available: #{available}"
         end
-        hash[name] = factory.call
       end
     end
 

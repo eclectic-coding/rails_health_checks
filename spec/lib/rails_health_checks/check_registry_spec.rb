@@ -61,6 +61,40 @@ RSpec.describe RailsHealthChecks::CheckRegistry do
       expect(result[:disk]).to be_a(RailsHealthChecks::Checks::DiskCheck)
     end
 
+    context "with a custom registered check" do
+      let(:custom_check) do
+        Class.new(RailsHealthChecks::Check) do
+          def call = pass("custom ok")
+        end.new
+      end
+
+      before do
+        RailsHealthChecks.configuration.register(:my_service, custom_check)
+      end
+
+      after do
+        RailsHealthChecks.instance_variable_set(:@configuration, nil)
+      end
+
+      it "builds the custom check by name" do
+        result = described_class.build([:my_service])
+        expect(result[:my_service]).to be_a(RailsHealthChecks::Check)
+      end
+
+      it "returns a dup so state does not leak between builds" do
+        result1 = described_class.build([:my_service])
+        result2 = described_class.build([:my_service])
+        expect(result1[:my_service]).not_to be(result2[:my_service])
+      end
+
+      it "runs the custom check successfully" do
+        result = described_class.build([:my_service])
+        described_class.run(result, timeout: 5)
+        expect(result[:my_service].status).to eq("ok")
+        expect(result[:my_service].message).to eq("custom ok")
+      end
+    end
+
     it "raises ArgumentError for unknown check names" do
       expect { described_class.build([:unknown]) }
         .to raise_error(ArgumentError, /Unknown check: unknown/)

@@ -15,6 +15,7 @@ A Rails engine providing structured, pluggable health check endpoints for monito
 - [Configuration](#configuration)
 - [Authentication](#authentication)
 - [Built-in Checks](#built-in-checks)
+- [Custom Checks](#custom-checks)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -134,6 +135,29 @@ The block receives the `ActionDispatch::Request` object and must return a truthy
 | `:disk` | Free disk bytes via `df`; optional `config.disk_warn_threshold` / `config.disk_critical_threshold` (bytes) and `config.disk_path` (default: `/`) |
 | `:memory` | Process RSS via `ps`; optional `config.memory_threshold` (bytes) reports `degraded` when exceeded |
 | `:http` | HTTP GET to `config.http_url`; reports `critical` if response code differs from `config.http_expected_status` (default: `200`) or a network error occurs |
+
+[↑ Back to top](#table-of-contents)
+
+---
+
+## Custom Checks
+
+Define a class inheriting from `RailsHealthChecks::Check` and register it in your initializer:
+
+```ruby
+class MyApiCheck < RailsHealthChecks::Check
+  def call
+    res = Net::HTTP.get_response(URI("https://api.example.com/status"))
+    res.code == "200" ? pass : fail_with("API returned #{res.code}")
+  end
+end
+
+RailsHealthChecks.configure do |config|
+  config.register :my_api, MyApiCheck.new
+end
+```
+
+`config.register` automatically adds the check to the active checks list. Use `pass`, `warn_with`, and `fail_with` (inherited from `Check`) to set status, and `measure { }` to record latency.
 
 [↑ Back to top](#table-of-contents)
 
