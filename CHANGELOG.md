@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-06-09
+
 ### Added
 - Prometheus metrics endpoint `GET /health/metrics` returning Prometheus text exposition format (`text/plain; version=0.0.4`); always returns HTTP 200; exposes `rails_health_check_status` (0=ok, 1=degraded, 2=critical) and `rails_health_check_latency_ms` gauges per check
 - Parallel check execution via `Concurrent::Future` — all checks now run concurrently, reducing total response time from the sum of check latencies to roughly the slowest single check; `concurrent-ruby` is a transitive Rails dependency and requires no additional gem
@@ -55,7 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ResponseBuilder` for composing JSON responses and HTTP status codes
 - Configuration DSL via `RailsHealthChecks.configure` (`checks`, `timeout`)
 
-[Unreleased]: https://github.com/eclectic-coding/rails_health_checks/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/eclectic-coding/rails_health_checks/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.6.0
 [0.5.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.5.0
 [0.4.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.4.0
 [0.3.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.3.0
