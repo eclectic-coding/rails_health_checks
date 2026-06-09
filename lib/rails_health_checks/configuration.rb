@@ -2,7 +2,8 @@
 
 module RailsHealthChecks
   class Configuration
-    attr_accessor :checks, :timeout, :allowed_ips, :token, :sidekiq_queue_size, :solid_queue_job_count, :good_job_latency,
+    attr_writer :checks
+    attr_accessor :timeout, :allowed_ips, :token, :sidekiq_queue_size, :solid_queue_job_count, :good_job_latency,
                   :resque_queue_size, :disk_warn_threshold, :disk_critical_threshold, :disk_path,
                   :memory_threshold, :http_url, :http_expected_status
     attr_reader :authenticate_block, :custom_checks, :groups
@@ -25,10 +26,22 @@ module RailsHealthChecks
       @http_expected_status = 200
       @custom_checks = {}
       @groups = {}
+      @disabled_checks = {}
+    end
+
+    def checks
+      disabled = @disabled_checks.filter_map { |name, envs| name if envs.include?(Rails.env.to_s) }
+      @checks - disabled
     end
 
     def authenticate(&block)
       @authenticate_block = block
+    end
+
+    def disable(name, **opts)
+      envs = Array(opts.fetch(:in)).map(&:to_s)
+      @disabled_checks[name] ||= []
+      @disabled_checks[name].concat(envs)
     end
 
     def group(name, check_names)

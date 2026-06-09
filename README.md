@@ -15,6 +15,7 @@ A Rails engine providing structured, pluggable health check endpoints for monito
 - [Configuration](#configuration)
 - [Authentication](#authentication)
 - [Built-in Checks](#built-in-checks)
+- [Per-Environment Toggling](#per-environment-toggling)
 - [Check Groups](#check-groups)
 - [Custom Checks](#custom-checks)
 - [Contributing](#contributing)
@@ -136,6 +137,24 @@ The block receives the `ActionDispatch::Request` object and must return a truthy
 | `:disk` | Free disk bytes via `df`; optional `config.disk_warn_threshold` / `config.disk_critical_threshold` (bytes) and `config.disk_path` (default: `/`) |
 | `:memory` | Process RSS via `ps`; optional `config.memory_threshold` (bytes) reports `degraded` when exceeded |
 | `:http` | HTTP GET to `config.http_url`; reports `critical` if response code differs from `config.http_expected_status` (default: `200`) or a network error occurs |
+
+[↑ Back to top](#table-of-contents)
+
+---
+
+## Per-Environment Toggling
+
+Disable specific checks in specific environments:
+
+```ruby
+RailsHealthChecks.configure do |config|
+  config.checks = [:database, :cache, :disk, :memory]
+  config.disable :disk,   in: :test
+  config.disable :memory, in: [:test, :development]
+end
+```
+
+The check is removed from the active list only when `Rails.env` matches. The `in:` option accepts a single symbol or an array.
 
 [↑ Back to top](#table-of-contents)
 
