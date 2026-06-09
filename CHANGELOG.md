@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.5.0] - Unreleased
+## [0.5.0] - 2026-06-09
 
 ### Added
 - Custom check API: `config.register :name, MyCheck.new` registers a host-app check (subclass of `RailsHealthChecks::Check`) and appends it to the active checks list; the check is `dup`'d on each health request so state does not leak between calls
@@ -49,7 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ResponseBuilder` for composing JSON responses and HTTP status codes
 - Configuration DSL via `RailsHealthChecks.configure` (`checks`, `timeout`)
 
-[Unreleased]: https://github.com/eclectic-coding/rails_health_checks/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/eclectic-coding/rails_health_checks/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.5.0
 [0.4.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.4.0
 [0.3.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.3.0
 [0.2.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.2.0
