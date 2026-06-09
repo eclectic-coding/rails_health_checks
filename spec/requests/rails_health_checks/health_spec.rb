@@ -77,6 +77,34 @@ RSpec.describe 'Health endpoints', type: :request do
     end
   end
 
+  describe 'GET /health/metrics' do
+    context 'when all checks pass' do
+      it 'returns 200 with Prometheus content type' do
+        get '/health/metrics'
+
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to include('text/plain')
+        expect(response.content_type).to include('version=0.0.4')
+      end
+
+      it 'includes status gauge lines' do
+        get '/health/metrics'
+
+        expect(response.body).to include('# TYPE rails_health_check_status gauge')
+        expect(response.body).to include('rails_health_check_status{check="database"}')
+      end
+
+      it 'always returns 200 even when a check is critical' do
+        allow(ActiveRecord::Base.connection).to receive(:execute).and_raise(StandardError, 'db down')
+
+        get '/health/metrics'
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('rails_health_check_status{check="database"} 2')
+      end
+    end
+  end
+
   describe 'GET /health/live' do
     context 'when all checks pass' do
       it 'returns 200 with OK text' do

@@ -4,14 +4,6 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 
 ---
 
-## [0.6.0] — Async & Observability
-
-> Production performance and integration with monitoring pipelines.
-
-- **Prometheus endpoint** — `GET /health/metrics` returning Prometheus text exposition format
-
----
-
 ## [1.0.0] — Stable
 
 > Production-hardened, fully documented, and migration-friendly.

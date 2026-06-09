@@ -16,6 +16,13 @@ module RailsHealthChecks
       end
     end
 
+    def metrics
+      results = run_checks(RailsHealthChecks.configuration.checks)
+      render plain: PrometheusFormatter.new(results).to_text,
+             content_type: "text/plain; version=0.0.4",
+             status: :ok
+    end
+
     def group
       group_name = params[:group].to_sym
       check_names = RailsHealthChecks.configuration.groups[group_name]
