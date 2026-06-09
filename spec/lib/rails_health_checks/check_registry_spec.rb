@@ -14,6 +14,14 @@ RSpec.describe RailsHealthChecks::CheckRegistry do
       expect(result[:cache]).to be_a(RailsHealthChecks::Checks::CacheCheck)
     end
 
+    it "builds a redis check when Redis is available" do
+      stub_const("Redis", Class.new do
+        def self.new(**); end
+      end)
+      result = described_class.build([:redis])
+      expect(result[:redis]).to be_a(RailsHealthChecks::Checks::RedisCheck)
+    end
+
     it "builds a resque check when Resque is available" do
       stub_const("Resque", Module.new do
         def self.redis; end

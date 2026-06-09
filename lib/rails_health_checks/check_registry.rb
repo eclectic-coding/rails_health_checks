@@ -8,6 +8,7 @@ module RailsHealthChecks
     BUILT_INS = {
       database: -> { Checks::DatabaseCheck.new },
       cache:    -> { Checks::CacheCheck.new },
+      redis:    -> { Checks::RedisCheck.new(url: RailsHealthChecks.configuration.redis_url) },
       sidekiq:     -> { Checks::SidekiqCheck.new(queue_size: RailsHealthChecks.configuration.sidekiq_queue_size) },
       solid_queue: -> { Checks::SolidQueueCheck.new(job_count: RailsHealthChecks.configuration.solid_queue_job_count) },
       good_job:    -> { Checks::GoodJobCheck.new(latency: RailsHealthChecks.configuration.good_job_latency) },

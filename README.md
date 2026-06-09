@@ -144,6 +144,7 @@ The block receives the `ActionDispatch::Request` object and must return a truthy
 |-------|-------------|
 | `:database` | ActiveRecord `SELECT 1` against the primary connection, includes latency |
 | `:cache` | `Rails.cache` read/write probe; works with Redis, Memcached, or in-process store |
+| `:redis` | Direct Redis ping via the `redis` gem; optional `config.redis_url` overrides the `REDIS_URL` env var (default: `redis://localhost:6379/0`) |
 | `:sidekiq` | Sidekiq Redis connectivity; optional `config.sidekiq_queue_size` threshold for queue depth |
 | `:solid_queue` | Solid Queue DB connectivity; optional `config.solid_queue_job_count` threshold for pending jobs |
 | `:good_job` | GoodJob queue latency; optional `config.good_job_latency` (seconds) threshold for oldest pending job |
