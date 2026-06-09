@@ -8,7 +8,6 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 
 > Production performance and integration with monitoring pipelines.
 
-- **ActiveSupport::Notifications** — publish `health_check.rails_health_checks` on each run; host apps can subscribe for custom alerting
 - **Prometheus endpoint** — `GET /health/metrics` returning Prometheus text exposition format
 
 ---

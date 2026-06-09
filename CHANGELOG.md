@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Parallel check execution via `Concurrent::Future` — all checks now run concurrently, reducing total response time from the sum of check latencies to roughly the slowest single check; `concurrent-ruby` is a transitive Rails dependency and requires no additional gem
 - Per-check timeout: `config.register :slow_api, check, timeout: 10` overrides the global `config.timeout` for that specific check; checks without an explicit timeout continue to use the global value
+- ActiveSupport::Notifications: publishes `health_check.rails_health_checks` on every check run; payload includes `status` (overall) and `checks` (per-check status, message, latency_ms); wraps the full execution so subscribers receive accurate duration
 
 ## [0.5.0] - 2026-06-09
 
