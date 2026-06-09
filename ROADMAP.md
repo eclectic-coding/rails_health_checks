@@ -9,7 +9,6 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 > Production-hardened, fully documented, and migration-friendly.
 
 - Complete README: configuration reference, all built-in checks, custom check authoring guide
-- `rails generate rails_health_checks:initializer` — generates a commented `config/initializers/rails_health_checks.rb` with all available options
 - Migration guide from `okcomputer` (check name mappings)
 - Rails 8.1+ compatibility locked in CI matrix
 - Performance benchmarks
