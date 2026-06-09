@@ -3,6 +3,7 @@
 require "rails_health_checks/version"
 require "rails_health_checks/engine"
 require "rails_health_checks/configuration"
+require "rails_health_checks/authentication"
 require "rails_health_checks/check"
 require "rails_health_checks/checks/database_check"
 require "rails_health_checks/check_registry"
