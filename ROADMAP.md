@@ -4,6 +4,4 @@ Rails 7.1 added a basic `/up` endpoint via `Rails::HealthController`, but it onl
 
 ---
 
-## [1.0.0] — Released 2026-06-09
-
-Production-hardened, fully documented, and migration-friendly stable release.
+No milestones are planned at this time. Feature requests and bug reports are welcome via [GitHub Issues](https://github.com/eclectic-coding/rails_health_checks/issues).
