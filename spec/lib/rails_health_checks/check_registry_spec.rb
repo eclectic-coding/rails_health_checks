@@ -14,6 +14,13 @@ RSpec.describe RailsHealthChecks::CheckRegistry do
       expect(result[:cache]).to be_a(RailsHealthChecks::Checks::CacheCheck)
     end
 
+    it "builds a sidekiq check when Sidekiq is available" do
+      stub_const("Sidekiq", Module.new { def self.redis; end })
+      stub_const("Sidekiq::Queue", Class.new { def self.all; end })
+      result = described_class.build([:sidekiq])
+      expect(result[:sidekiq]).to be_a(RailsHealthChecks::Checks::SidekiqCheck)
+    end
+
     it "raises ArgumentError for unknown check names" do
       expect { described_class.build([:unknown]) }
         .to raise_error(ArgumentError, /Unknown check: unknown/)
