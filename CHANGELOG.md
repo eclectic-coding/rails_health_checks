@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - Unreleased
+
+### Added
+- Custom check API: `config.register :name, MyCheck.new` registers a host-app check (subclass of `RailsHealthChecks::Check`) and appends it to the active checks list; the check is `dup`'d on each health request so state does not leak between calls
+
 ## [0.4.0] - 2026-06-09
 
 ### Added
