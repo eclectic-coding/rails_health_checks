@@ -78,7 +78,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ResponseBuilder` for composing JSON responses and HTTP status codes
 - Configuration DSL via `RailsHealthChecks.configure` (`checks`, `timeout`)
 
-[Unreleased]: https://github.com/eclectic-coding/rails_health_checks/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/eclectic-coding/rails_health_checks/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v1.0.0
 [0.7.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.7.0
 [0.6.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.6.0
 [0.5.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.5.0
