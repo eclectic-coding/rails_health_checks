@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-06-09
+
 ### Added
 - Result caching: `config.cache_duration = N` (seconds) caches check results in memory, avoiding re-running expensive checks on every request; disabled by default; keyed per check set so group endpoints cache independently; thread-safe
 - HEAD request support on `GET /health` and `GET /health/live` for load balancer compatibility
@@ -63,7 +65,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ResponseBuilder` for composing JSON responses and HTTP status codes
 - Configuration DSL via `RailsHealthChecks.configure` (`checks`, `timeout`)
 
-[Unreleased]: https://github.com/eclectic-coding/rails_health_checks/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/eclectic-coding/rails_health_checks/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.7.0
 [0.6.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.6.0
 [0.5.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.5.0
 [0.4.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.4.0
