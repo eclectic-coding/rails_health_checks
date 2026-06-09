@@ -9,6 +9,11 @@ RSpec.describe RailsHealthChecks::CheckRegistry do
       expect(result[:database]).to be_a(RailsHealthChecks::Checks::DatabaseCheck)
     end
 
+    it "builds a cache check" do
+      result = described_class.build([:cache])
+      expect(result[:cache]).to be_a(RailsHealthChecks::Checks::CacheCheck)
+    end
+
     it "raises ArgumentError for unknown check names" do
       expect { described_class.build([:unknown]) }
         .to raise_error(ArgumentError, /Unknown check: unknown/)
