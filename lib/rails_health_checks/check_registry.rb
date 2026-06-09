@@ -6,7 +6,8 @@ module RailsHealthChecks
   class CheckRegistry
     BUILT_INS = {
       database: -> { Checks::DatabaseCheck.new },
-      cache:    -> { Checks::CacheCheck.new }
+      cache:    -> { Checks::CacheCheck.new },
+      sidekiq:  -> { Checks::SidekiqCheck.new(queue_size: RailsHealthChecks.configuration.sidekiq_queue_size) }
     }.freeze
 
     def self.build(check_names)
