@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `RailsHealthChecks::Rack::App` — a mountable Rack app that exposes the same four endpoints (`GET/HEAD /`, `GET/HEAD /live`, `GET /metrics`, `GET /:group`) for use in Sinatra, Roda, or plain Rack applications; opt-in via `require "rails_health_checks/rack/app"`; supports token auth, IP allowlist, custom auth block, result caching, and check groups; Rails-specific built-in checks (`:database`, `:cache`) require ActiveRecord/Rails in the stack but framework-agnostic checks (`:disk`, `:memory`, `:http`, `:redis`, `:smtp`) work in any Rack context
 
+### Changed
+- Relaxed Rails dependency from `>= 8.0` to `>= 7.1`; gem is now compatible with Rails 7.1, 7.2, and 8.x
+- Added `concurrent-ruby >= 1.1` as an explicit runtime dependency (was previously an implicit transitive dependency through Rails)
+- CI matrix expanded to test against Rails 7.1 and 7.2 on Ruby 3.3 and 3.4; Ruby 4.0 continues to test against Rails 8.x only
+
 ## [1.0.1] - 2026-06-09
 
 ### Changed

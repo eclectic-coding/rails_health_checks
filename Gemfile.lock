@@ -2,7 +2,8 @@ PATH
   remote: .
   specs:
     rails_health_checks (1.0.1)
-      rails (>= 8.0)
+      concurrent-ruby (>= 1.1)
+      rails (>= 7.1)
 
 GEM
   remote: https://rubygems.org/

@@ -1,0 +1,21 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+gem "rails", "~> 7.2.0"
+
+gemspec path: ".."
+
+gem "puma"
+gem "sqlite3", "~> 2.0"
+
+gem "bundler-audit",          require: false
+gem "factory_bot_rails"
+gem "rspec-rails"
+gem "rubocop-rails"
+gem "rubocop-rails-omakase",  require: false
+gem "simplecov",              require: false
+gem "simplecov-json",         require: false
+
+gem "benchmark",     require: false
+gem "benchmark-ips", require: false

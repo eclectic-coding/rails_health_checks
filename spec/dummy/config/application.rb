@@ -7,7 +7,7 @@ require 'rails_health_checks'
 
 module Dummy
   class Application < Rails::Application
-    config.load_defaults 8.0
+    config.load_defaults Rails::VERSION::MAJOR >= 8 ? 8.0 : 7.1
     config.eager_load = false
     config.cache_store = :memory_store
   end
