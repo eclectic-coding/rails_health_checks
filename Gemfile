@@ -11,9 +11,7 @@ gem "sqlite3"
 
 # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
 gem "bundler-audit", require: false
-gem "factory_bot_rails"
 gem "rspec-rails"
-gem "rubocop-rails"
 gem "rubocop-rails-omakase", require: false
 gem "simplecov",      require: false
 gem "simplecov-json", require: false

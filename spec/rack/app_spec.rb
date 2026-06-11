@@ -198,6 +198,32 @@ RSpec.describe RailsHealthChecks::Rack::App do
 
       expect(response.status).to eq(401)
     end
+
+    it "returns 401 for an invalid IP address" do
+      response = browser.get("/", "REMOTE_ADDR" => "not-an-ip")
+
+      expect(response.status).to eq(401)
+    end
+  end
+
+  describe "custom block authentication" do
+    before do
+      RailsHealthChecks.configure do |config|
+        config.authenticate { |request| request.env["HTTP_X_INTERNAL"] == "true" }
+      end
+    end
+
+    it "returns 200 when the block returns truthy" do
+      response = browser.get("/", "HTTP_X_INTERNAL" => "true")
+
+      expect(response.status).to eq(200)
+    end
+
+    it "returns 401 when the block returns falsy" do
+      response = browser.get("/")
+
+      expect(response.status).to eq(401)
+    end
   end
 
   describe "result caching" do

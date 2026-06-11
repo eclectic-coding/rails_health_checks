@@ -2,12 +2,12 @@
 
 source "https://rubygems.org"
 
-gem "rails", "~> 8.0.0"
+gem "rails", "~> 7.1.0"
 
 gemspec path: ".."
 
 gem "puma"
-gem "sqlite3"
+gem "sqlite3", "~> 1.7"
 
 gem "bundler-audit",          require: false
 gem "rspec-rails"
