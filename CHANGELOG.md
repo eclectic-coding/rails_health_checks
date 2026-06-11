@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `RailsHealthChecks::Rack::App` — a mountable Rack app that exposes the same four endpoints (`GET/HEAD /`, `GET/HEAD /live`, `GET /metrics`, `GET /:group`) for use in Sinatra, Roda, or plain Rack applications; opt-in via `require "rails_health_checks/rack/app"`; supports token auth, IP allowlist, custom auth block, result caching, and check groups; Rails-specific built-in checks (`:database`, `:cache`) require ActiveRecord/Rails in the stack but framework-agnostic checks (`:disk`, `:memory`, `:http`, `:redis`, `:smtp`) work in any Rack context
+
 ## [1.0.1] - 2026-06-09
 
 ### Changed
