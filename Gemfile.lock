@@ -313,7 +313,6 @@ DEPENDENCIES
   puma
   rails_health_checks!
   rspec-rails
-  rubocop-rails
   rubocop-rails-omakase
   simplecov
   simplecov-json
