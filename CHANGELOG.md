@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Relaxed Rails dependency from `>= 8.0` to `>= 7.1`; gem is now compatible with Rails 7.1, 7.2, and 8.x
 - Added `concurrent-ruby >= 1.1` as an explicit runtime dependency (was previously an implicit transitive dependency through Rails)
 - CI matrix expanded to test against Rails 7.1 and 7.2 on Ruby 3.3 and 3.4; Ruby 4.0 continues to test against Rails 8.x only
+- Removed `factory_bot_rails` dev dependency — no factories exist in this gem and no specs use FactoryBot
+- Removed explicit `rubocop-rails` dev dependency — it is a declared dependency of `rubocop-rails-omakase` and is installed transitively
 
 ## [1.0.1] - 2026-06-09
 
