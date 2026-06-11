@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "rails_health_checks/version"
-require "rails_health_checks/engine"
+require "rails_health_checks/engine" if defined?(Rails)
 require "rails_health_checks/configuration"
 require "rails_health_checks/authentication"
 require "rails_health_checks/check"
