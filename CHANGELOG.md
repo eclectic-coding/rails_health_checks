@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-06-11
+
 ### Added
 - `RailsHealthChecks::Rack::App` — a mountable Rack app that exposes the same four endpoints (`GET/HEAD /`, `GET/HEAD /live`, `GET /metrics`, `GET /:group`) for use in Sinatra, Roda, or plain Rack applications; opt-in via `require "rails_health_checks/rack/app"`; supports token auth, IP allowlist, custom auth block, result caching, and check groups; Rails-specific built-in checks (`:database`, `:cache`) require ActiveRecord/Rails in the stack but framework-agnostic checks (`:disk`, `:memory`, `:http`, `:redis`, `:smtp`) work in any Rack context
 
@@ -93,7 +95,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ResponseBuilder` for composing JSON responses and HTTP status codes
 - Configuration DSL via `RailsHealthChecks.configure` (`checks`, `timeout`)
 
-[Unreleased]: https://github.com/eclectic-coding/rails_health_checks/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/eclectic-coding/rails_health_checks/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/eclectic-coding/rails_health_checks/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/eclectic-coding/rails_health_checks/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v1.0.0
 [0.7.0]: https://github.com/eclectic-coding/rails_health_checks/releases/tag/v0.7.0
