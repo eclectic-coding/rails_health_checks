@@ -42,7 +42,8 @@ module RailsHealthChecks
     end
 
     def checks
-      disabled = @disabled_checks.filter_map { |name, envs| name if envs.include?(Rails.env.to_s) }
+      current_env = defined?(Rails) ? Rails.env.to_s : ENV.fetch("RACK_ENV", "production")
+      disabled = @disabled_checks.filter_map { |name, envs| name if envs.include?(current_env) }
       @checks - disabled
     end
 

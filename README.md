@@ -22,6 +22,7 @@ A Rails engine that adds production-grade health check endpoints to any Rails ap
 ## Table of Contents
 
 - [Installation](#installation)
+- [Rack Applications](#rack-applications)
 - [Endpoints](#endpoints)
 - [Configuration](#configuration)
   - [Configuration Reference](#configuration-reference)
@@ -61,6 +62,111 @@ Mount the engine in `config/routes.rb`:
 ```ruby
 mount RailsHealthChecks::Engine => "/health"
 ```
+
+[↑ Back to top](#table-of-contents)
+
+---
+
+## Rack Applications
+
+`RailsHealthChecks::Rack::App` is a mountable Rack app that exposes the same endpoints without requiring ActionDispatch or Rails routing. It is opt-in — the Rails engine is unaffected.
+
+### Setup
+
+Add to your Gemfile (the gem already lists `rails >= 8.0` as a dependency, so `activesupport` and `concurrent-ruby` are available):
+
+```ruby
+gem "rails_health_checks"
+```
+
+Require and mount the Rack app alongside your existing app:
+
+```ruby
+# config.ru
+require "rails_health_checks"
+require "rails_health_checks/rack/app"
+
+RailsHealthChecks.configure do |config|
+  config.checks = [:disk, :memory, :redis]
+  config.redis_url = ENV["REDIS_URL"]
+end
+
+map "/health" do
+  run RailsHealthChecks::Rack::App
+end
+
+run MyApp
+```
+
+#### Sinatra
+
+```ruby
+require "rails_health_checks/rack/app"
+
+class MyApp < Sinatra::Base
+  use Rack::URLMap, "/health" => RailsHealthChecks::Rack::App
+end
+```
+
+#### Roda
+
+```ruby
+require "rails_health_checks/rack/app"
+
+class MyApp < Roda
+  plugin :multi_run
+  run "/health", RailsHealthChecks::Rack::App
+end
+```
+
+### Available endpoints
+
+The routes are identical to the Rails engine, relative to the mount point:
+
+| Endpoint | Format | Use case |
+|----------|--------|----------|
+| `GET/HEAD /` | JSON | Health status |
+| `GET/HEAD /live` | Plain text | Liveness probe |
+| `GET /metrics` | Prometheus text | Prometheus scraping |
+| `GET /:group` | JSON | Scoped check group |
+
+### Framework-agnostic vs Rails-coupled checks
+
+Checks that depend on Rails internals require those libraries to be present in the stack. Checks that use only stdlib or standalone gems work in any Rack context:
+
+| Check | Works without Rails? |
+|-------|---------------------|
+| `:disk` | Yes |
+| `:memory` | Yes |
+| `:http` | Yes |
+| `:redis` | Yes (requires `redis` gem) |
+| `:smtp` | Yes (reads `ActionMailer` config if available, otherwise requires `config.smtp_address`) |
+| `:database` | Requires ActiveRecord |
+| `:cache` | Requires `Rails.cache` |
+| `:sidekiq` | Requires Sidekiq |
+| `:solid_queue` | Requires SolidQueue |
+| `:good_job` | Requires GoodJob |
+| `:resque` | Requires Resque |
+
+### Per-environment toggling in Rack
+
+`config.disable :check, in: :env` compares against `Rails.env` in a Rails app. In a non-Rails Rack app it reads `ENV["RACK_ENV"]` instead (defaulting to `"production"` if unset):
+
+```ruby
+config.disable :disk, in: :test   # compares RACK_ENV when Rails is not defined
+```
+
+### Authentication in Rack
+
+All three authentication strategies work identically. When using the custom block strategy, the argument is a `Rack::Request` instead of `ActionDispatch::Request`:
+
+```ruby
+RailsHealthChecks.configure do |config|
+  config.authenticate { |request| request.env["HTTP_X_INTERNAL"] == "true" }
+end
+```
+
+Token and IP allowlist strategies are unchanged.
 
 [↑ Back to top](#table-of-contents)
 
@@ -274,7 +380,7 @@ RailsHealthChecks.configure do |config|
 end
 ```
 
-The block receives the `ActionDispatch::Request` object and must return a truthy value to allow access.
+The block receives the request object and must return a truthy value to allow access. In a Rails app this is `ActionDispatch::Request`; in the Rack app it is `Rack::Request`.
 
 [↑ Back to top](#table-of-contents)
 

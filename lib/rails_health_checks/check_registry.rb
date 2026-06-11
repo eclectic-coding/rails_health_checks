@@ -46,7 +46,7 @@ module RailsHealthChecks
 
     def self.run(checks, timeout:)
       results = {}
-      ActiveSupport::Notifications.instrument("health_check.rails_health_checks") do |payload|
+      instrument do |payload|
         futures = checks.transform_values do |check|
           t = check.timeout || timeout
           Concurrent::Future.execute { run_check(check, timeout: t) }
@@ -55,12 +55,22 @@ module RailsHealthChecks
           t = check.timeout || timeout
           results[name] = futures[name].value(t + 1) || mark_critical(check, "timed out")
         end
-        payload[:status] = overall_status(results)
-        payload[:checks] = results.transform_values do |c|
-          { status: c.status, message: c.message, latency_ms: c.latency_ms }.compact
+        if payload
+          payload[:status] = overall_status(results)
+          payload[:checks] = results.transform_values do |c|
+            { status: c.status, message: c.message, latency_ms: c.latency_ms }.compact
+          end
         end
       end
       results
+    end
+
+    def self.instrument(&block)
+      if defined?(ActiveSupport::Notifications)
+        ActiveSupport::Notifications.instrument("health_check.rails_health_checks", &block)
+      else
+        yield nil
+      end
     end
 
     def self.run_check(check, timeout:)
@@ -86,6 +96,6 @@ module RailsHealthChecks
       end
     end
 
-    private_class_method :run_check, :mark_critical, :overall_status
+    private_class_method :run_check, :mark_critical, :overall_status, :instrument
   end
 end
