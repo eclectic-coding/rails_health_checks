@@ -191,4 +191,50 @@ RSpec.describe 'Health endpoints', type: :request do
       end
     end
   end
+
+  describe 'GET /health/ready' do
+    context 'when all checks pass' do
+      it 'returns 200 with OK text' do
+        get '/health/ready'
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to eq('OK')
+      end
+    end
+
+    context 'when the database check fails' do
+      before do
+        allow(ActiveRecord::Base.connection).to receive(:execute).and_raise(StandardError, 'connection refused')
+      end
+
+      it 'returns 503 with Service Unavailable text' do
+        get '/health/ready'
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.body).to eq('Service Unavailable')
+      end
+    end
+  end
+
+  describe 'HEAD /health/ready' do
+    it 'returns 200 with no body' do
+      head '/health/ready'
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to be_empty
+    end
+
+    context 'when the database check fails' do
+      before do
+        allow(ActiveRecord::Base.connection).to receive(:execute).and_raise(StandardError, 'connection refused')
+      end
+
+      it 'returns 503 with no body' do
+        head '/health/ready'
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.body).to be_empty
+      end
+    end
+  end
 end
