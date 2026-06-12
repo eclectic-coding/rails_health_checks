@@ -177,13 +177,45 @@ Token and IP allowlist strategies are unchanged.
 | Endpoint | Format | Use case |
 |----------|--------|----------|
 | `GET /health` | JSON | Monitoring dashboards, detailed diagnostics |
-| `GET /health/live` | Plain text | Load balancer liveness probes |
+| `GET /health/live` | Plain text | Kubernetes `livenessProbe`, load balancer health check |
+| `GET /health/ready` | Plain text | Kubernetes `readinessProbe`, external monitors (Pingdom, etc.) |
 | `GET /health/metrics` | Prometheus text | Prometheus / OpenMetrics scraping |
 | `GET /health/:group` | JSON | Scoped check group (e.g. `/health/workers`) |
 
-`/health` and `/health/live` also respond to `HEAD` requests (useful for lightweight load balancer probes).
+`/health`, `/health/live`, and `/health/ready` also respond to `HEAD` requests.
 
 HTTP status is `200 OK` when all checks pass, `503 Service Unavailable` otherwise (except `/metrics` which always returns `200`).
+
+### Liveness vs. Readiness — why two tiers?
+
+Using a single health endpoint for both load balancer checks and readiness monitoring is a **cascade failure footgun**. If your database blips for a few seconds, every node fails its health check simultaneously, the load balancer ejects all nodes, pods restart, and a brief DB outage becomes a full service outage.
+
+**Liveness (`/health/live`)** — checks only that the Ruby process is alive. Returns `200 OK` as long as the process responds, regardless of whether the database, Redis, or any other dependency is reachable. No authentication required. Use this for:
+- Kubernetes `livenessProbe` (k8s restarts a pod only if it can't respond at all)
+- Load balancer health checks (a node that's up but waiting for the DB should stay in rotation)
+
+**Readiness (`/health/ready`)** — runs all configured dependency checks. Returns `503` if any check fails. Use this for:
+- Kubernetes `readinessProbe` (k8s stops routing traffic to a pod that isn't ready to serve)
+- External monitors (Pingdom, UptimeRobot, etc.) that should page you when a dependency fails
+
+**Deep JSON (`/health`)** — same checks as `/ready` but returns structured JSON with per-check status and latency. Use this for monitoring dashboards, alerting pipelines, or anywhere you need machine-readable detail.
+
+### Configuring endpoint paths
+
+The readiness path defaults to `ready` (i.e. `/health/ready` when the engine is mounted at `/health`). Override it in your initializer:
+
+```ruby
+RailsHealthChecks.configure do |config|
+  config.readiness_path = "up/ready"  # → /health/up/ready
+end
+```
+
+The engine's mount point is always configurable in `config/routes.rb`:
+
+```ruby
+mount RailsHealthChecks::Engine => "/healthz"
+# exposes: /healthz, /healthz/live, /healthz/ready, /healthz/metrics
+```
 
 ### JSON response shape
 

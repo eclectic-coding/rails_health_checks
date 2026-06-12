@@ -12,7 +12,8 @@ module RailsHealthChecks
                   :smtp_address, :smtp_port,
                   :sidekiq_queue_size, :solid_queue_job_count, :good_job_latency,
                   :resque_queue_size, :disk_warn_threshold, :disk_critical_threshold, :disk_path,
-                  :memory_threshold, :http_url, :http_expected_status, :http_headers
+                  :memory_threshold, :http_url, :http_expected_status, :http_headers,
+                  :readiness_path
     attr_reader :authenticate_block, :custom_checks, :groups
 
     def initialize
@@ -39,6 +40,7 @@ module RailsHealthChecks
       @custom_checks = {}
       @groups = {}
       @disabled_checks = {}
+      @readiness_path = "ready"
     end
 
     def checks

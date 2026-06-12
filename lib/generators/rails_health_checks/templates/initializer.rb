@@ -13,6 +13,13 @@ RailsHealthChecks.configure do |config|
   # config.cache_duration = 10
 
   # ---------------------------------------------------------------------------
+  # Endpoint paths
+  # ---------------------------------------------------------------------------
+  # Path for the readiness endpoint within the engine (default: "ready").
+  # When the engine is mounted at "/health", the readiness endpoint is "/health/ready".
+  # config.readiness_path = "ready"
+
+  # ---------------------------------------------------------------------------
   # Authentication — all strategies are mutually exclusive; default is public
   # ---------------------------------------------------------------------------
 
