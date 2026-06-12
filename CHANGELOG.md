@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-06-12
+
 ### Added
 - Readiness endpoint `GET /health/ready` (and `HEAD`) — runs all configured dependency checks and returns `200 OK` / `503 Service Unavailable` as plain text; the path is configurable via `config.readiness_path` (default: `"ready"`)
 - README: Kubernetes and load balancer wiring examples, step-by-step cascade failure scenario, per-environment endpoint guidance, and Upgrading section for the v1.1.x → v1.2.x breaking change
