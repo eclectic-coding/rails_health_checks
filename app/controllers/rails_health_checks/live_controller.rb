@@ -2,13 +2,10 @@
 
 module RailsHealthChecks
   class LiveController < ApplicationController
+    skip_before_action :authenticate!
+
     def show
-      builder = ResponseBuilder.new(run_checks(RailsHealthChecks.configuration.checks))
-      if builder.overall_status == "ok"
-        render plain: "OK", status: :ok
-      else
-        render plain: "Service Unavailable", status: :service_unavailable
-      end
+      render plain: "OK", status: :ok
     end
   end
 end

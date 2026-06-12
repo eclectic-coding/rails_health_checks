@@ -171,25 +171,23 @@ RSpec.describe 'Health endpoints', type: :request do
   end
 
   describe 'GET /health/live' do
-    context 'when all checks pass' do
-      it 'returns 200 with OK text' do
-        get '/health/live'
+    it 'returns 200 with OK text regardless of dependency state' do
+      get '/health/live'
 
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to eq('OK')
-      end
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to eq('OK')
     end
 
-    context 'when the database check fails' do
+    context 'when the database is down' do
       before do
         allow(ActiveRecord::Base.connection).to receive(:execute).and_raise(StandardError, 'connection refused')
       end
 
-      it 'returns 503 with Service Unavailable text' do
+      it 'still returns 200 — liveness only checks the process is alive' do
         get '/health/live'
 
-        expect(response).to have_http_status(:service_unavailable)
-        expect(response.body).to eq('Service Unavailable')
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to eq('OK')
       end
     end
   end
