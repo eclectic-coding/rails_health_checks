@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Readiness endpoint `GET /health/ready` (and `HEAD`) — runs all configured dependency checks and returns `200 OK` / `503 Service Unavailable` as plain text; the path is configurable via `config.readiness_path` (default: `"ready"`)
+- README: Kubernetes and load balancer wiring examples, step-by-step cascade failure scenario, per-environment endpoint guidance, and Upgrading section for the v1.1.x → v1.2.x breaking change
 
 ### Changed
 - **Breaking:** `GET /health/live` (liveness endpoint) no longer runs dependency checks — it now returns `200 OK` whenever the Ruby process is alive, regardless of database, Redis, or other external service state. Authentication is also skipped on this endpoint so Kubernetes `livenessProbe` and load balancer health checks work without credentials. If you relied on `/live` to verify dependencies, switch to `/health/ready` (added in the same release).
