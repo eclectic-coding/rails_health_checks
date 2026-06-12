@@ -11,6 +11,7 @@ A Rails engine that adds production-grade health check endpoints to any Rails ap
 **Built-in checks:** database · cache · Redis · SMTP · Sidekiq · SolidQueue · GoodJob · Resque · disk · memory · HTTP
 
 **Key features:**
+- **Two-tier endpoints:** `/live` (liveness — process only) and `/ready` (readiness — all deps) prevent cascade failures in Kubernetes and behind load balancers
 - Parallel check execution via `Concurrent::Future` — response time bounded by the slowest check, not the sum
 - Result caching (`config.cache_duration`) to absorb high-frequency probe traffic
 - Prometheus text exposition at `GET /health/metrics` (always HTTP 200)
@@ -21,9 +22,14 @@ A Rails engine that adds production-grade health check endpoints to any Rails ap
 
 ## Table of Contents
 
+- [Upgrading](#upgrading)
 - [Installation](#installation)
 - [Rack Applications](#rack-applications)
 - [Endpoints](#endpoints)
+  - [Liveness vs. Readiness](#liveness-vs-readiness--why-two-tiers)
+  - [Kubernetes wiring](#kubernetes-wiring)
+  - [Load balancer wiring](#load-balancer-wiring)
+  - [Configuring endpoint paths](#configuring-endpoint-paths)
 - [Configuration](#configuration)
   - [Configuration Reference](#configuration-reference)
 - [Authentication](#authentication)
@@ -40,6 +46,30 @@ A Rails engine that adds production-grade health check endpoints to any Rails ap
 - [Performance](#performance)
 - [Contributing](#contributing)
 - [License](#license)
+
+---
+
+## Upgrading
+
+### v1.1.x → v1.2.x — breaking change to `/live`
+
+> **`GET /health/live` no longer runs dependency checks.**
+
+Prior to v1.2.0, `/live` ran all configured checks (database, Redis, etc.) and returned `503` if any failed. This was readiness behaviour under a liveness name and is the root cause of the cascade failure footgun described below.
+
+**What changed:** `/live` now returns `200 OK` whenever the Ruby process is alive, regardless of dependency state. Authentication is also skipped on this endpoint so Kubernetes and load balancer probes work without credentials.
+
+**What to do:** If you were relying on `/live` to verify dependencies, switch to the new `/health/ready` endpoint. No configuration changes required.
+
+```
+# Before (was running dependency checks — now only liveness)
+GET /health/live   →  200 if process alive (deps ignored)
+
+# New endpoint for dependency checks
+GET /health/ready  →  200 if all deps pass, 503 if any fail
+```
+
+[↑ Back to top](#table-of-contents)
 
 ---
 
@@ -125,8 +155,9 @@ The routes are identical to the Rails engine, relative to the mount point:
 
 | Endpoint | Format | Use case |
 |----------|--------|----------|
-| `GET/HEAD /` | JSON | Health status |
-| `GET/HEAD /live` | Plain text | Liveness probe |
+| `GET/HEAD /` | JSON | Full dependency health (monitoring dashboards) |
+| `GET/HEAD /live` | Plain text | Liveness probe — process only, no deps |
+| `GET/HEAD /ready` | Plain text | Readiness probe — all configured dependency checks |
 | `GET /metrics` | Prometheus text | Prometheus scraping |
 | `GET /:group` | JSON | Scoped check group |
 
@@ -174,31 +205,121 @@ Token and IP allowlist strategies are unchanged.
 
 ## Endpoints
 
-| Endpoint | Format | Use case |
-|----------|--------|----------|
-| `GET /health` | JSON | Monitoring dashboards, detailed diagnostics |
-| `GET /health/live` | Plain text | Kubernetes `livenessProbe`, load balancer health check |
-| `GET /health/ready` | Plain text | Kubernetes `readinessProbe`, external monitors (Pingdom, etc.) |
-| `GET /health/metrics` | Prometheus text | Prometheus / OpenMetrics scraping |
-| `GET /health/:group` | JSON | Scoped check group (e.g. `/health/workers`) |
+| Endpoint | Runs checks? | Format | Use case |
+|----------|-------------|--------|----------|
+| `GET /health/live` | No — process only | Plain text | Kubernetes `livenessProbe`, load balancer health check |
+| `GET /health/ready` | Yes — all configured deps | Plain text | Kubernetes `readinessProbe`, external uptime monitors |
+| `GET /health` | Yes — all configured deps | JSON | Monitoring dashboards, alerting pipelines |
+| `GET /health/metrics` | Yes — all configured deps | Prometheus text | Prometheus / OpenMetrics scraping |
+| `GET /health/:group` | Yes — named subset | JSON | Scoped group (e.g. `/health/workers`) |
 
-`/health`, `/health/live`, and `/health/ready` also respond to `HEAD` requests.
+`/health/live`, `/health/ready`, and `/health` also respond to `HEAD` requests.
 
-HTTP status is `200 OK` when all checks pass, `503 Service Unavailable` otherwise (except `/metrics` which always returns `200`).
+HTTP status: `200 OK` when all checks pass, `503 Service Unavailable` when any check fails (except `/metrics` which always returns `200`, and `/live` which always returns `200`).
+
+---
 
 ### Liveness vs. Readiness — why two tiers?
 
-Using a single health endpoint for both load balancer checks and readiness monitoring is a **cascade failure footgun**. If your database blips for a few seconds, every node fails its health check simultaneously, the load balancer ejects all nodes, pods restart, and a brief DB outage becomes a full service outage.
+**Using a single health endpoint for both load balancer checks and dependency monitoring is a cascade failure footgun.** Here is the exact failure chain:
 
-**Liveness (`/health/live`)** — checks only that the Ruby process is alive. Returns `200 OK` as long as the process responds, regardless of whether the database, Redis, or any other dependency is reachable. No authentication required. Use this for:
-- Kubernetes `livenessProbe` (k8s restarts a pod only if it can't respond at all)
-- Load balancer health checks (a node that's up but waiting for the DB should stay in rotation)
+1. Your database has a 30-second blip
+2. All running pods probe `/health/ready` → all return `503`
+3. The load balancer removes every pod from rotation simultaneously
+4. Traffic has nowhere to go — the app is fully down
+5. If the same endpoint drives `livenessProbe`, Kubernetes begins restarting every pod
+6. Restarting pods reconnect to the still-blipping database, fail again, restart again
+7. What was a 30-second DB hiccup is now a multi-minute outage driven by a thundering herd of pod restarts
 
-**Readiness (`/health/ready`)** — runs all configured dependency checks. Returns `503` if any check fails. Use this for:
-- Kubernetes `readinessProbe` (k8s stops routing traffic to a pod that isn't ready to serve)
-- External monitors (Pingdom, UptimeRobot, etc.) that should page you when a dependency fails
+The fix is to separate the two concerns:
 
-**Deep JSON (`/health`)** — same checks as `/ready` but returns structured JSON with per-check status and latency. Use this for monitoring dashboards, alerting pipelines, or anywhere you need machine-readable detail.
+| Endpoint | Question it answers | Correct probe |
+|----------|--------------------|--------------:|
+| `/health/live` | Is the process running and responsive? | `livenessProbe`, LB health check |
+| `/health/ready` | Are all dependencies reachable? | `readinessProbe`, uptime monitor |
+
+**Liveness (`/health/live`)** — returns `200 OK` as long as the Ruby process responds. No dependency checks run. Authentication is skipped so Kubernetes and load balancers work without credentials. When this fails, k8s restarts the pod because the process itself is stuck or crashed.
+
+**Readiness (`/health/ready`)** — runs all configured dependency checks. Returns `503` if any check fails. When this fails, k8s stops routing traffic to the pod but leaves it running. The pod rejoins rotation automatically once dependencies recover — no restart, no thundering herd.
+
+**Deep JSON (`/health`)** — same dependency checks as `/ready`, returned as structured JSON with per-check status and latency. Use for monitoring dashboards, alerting, or anywhere you need machine-readable detail. Do not use for liveness or readiness probes.
+
+---
+
+### Kubernetes wiring
+
+```yaml
+containers:
+  - name: web
+    ports:
+      - containerPort: 3000
+    livenessProbe:
+      httpGet:
+        path: /health/live   # process-only — DB blip does NOT restart this pod
+        port: 3000
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      failureThreshold: 3    # restarts only if the process stops responding entirely
+    readinessProbe:
+      httpGet:
+        path: /health/ready  # dep checks — stops traffic but does NOT restart the pod
+        port: 3000
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      failureThreshold: 2    # removes from rotation after 2 consecutive dep failures
+    startupProbe:            # optional: give the app time to boot before probing
+      httpGet:
+        path: /health/live
+        port: 3000
+      failureThreshold: 30
+      periodSeconds: 5
+```
+
+> **Warning:** Do not point `livenessProbe` at `/health/ready`. A single dependency failure will cause Kubernetes to restart every pod simultaneously, turning a recoverable dep outage into a full application restart loop.
+
+---
+
+### Load balancer wiring
+
+Always use the liveness endpoint for load balancer health checks. If you use the readiness endpoint and a dependency blips, the load balancer ejects all nodes at once and traffic has nowhere to go.
+
+**AWS ALB / NLB (target group health check)**
+
+```
+Health check path:    /health/live
+Healthy threshold:    2
+Unhealthy threshold:  3
+Timeout:              5s
+Interval:             10s
+```
+
+**Nginx upstream**
+
+```nginx
+upstream rails_app {
+  server app1:3000;
+  server app2:3000;
+}
+
+server {
+  location /health/live {
+    proxy_pass http://rails_app;
+  }
+}
+```
+
+**HAProxy**
+
+```
+backend rails_app
+  option httpchk GET /health/live
+  server app1 app1:3000 check
+  server app2 app2:3000 check
+```
+
+> **Note:** Reserve `/health/ready` for Kubernetes `readinessProbe` and external uptime monitors (Pingdom, UptimeRobot, Better Uptime). These are the right tools to alert you when dependencies are down — the load balancer is not.
+
+---
 
 ### Configuring endpoint paths
 
@@ -206,16 +327,18 @@ The readiness path defaults to `ready` (i.e. `/health/ready` when the engine is 
 
 ```ruby
 RailsHealthChecks.configure do |config|
-  config.readiness_path = "up/ready"  # → /health/up/ready
+  config.readiness_path = "readyz"  # → /health/readyz
 end
 ```
 
-The engine's mount point is always configurable in `config/routes.rb`:
+The engine mount point is configurable in `config/routes.rb`:
 
 ```ruby
 mount RailsHealthChecks::Engine => "/healthz"
-# exposes: /healthz, /healthz/live, /healthz/ready, /healthz/metrics
+# exposes: /healthz/live, /healthz/ready, /healthz, /healthz/metrics
 ```
+
+---
 
 ### JSON response shape
 
@@ -361,6 +484,7 @@ Configuration is validated at boot time. An unknown check name, a missing `http_
 | `checks` | `Array` | `[:database]` | Built-in or custom check names to run |
 | `timeout` | `Integer` | `5` | Global per-check timeout in seconds |
 | `cache_duration` | `Integer\|nil` | `nil` | Cache results for N seconds; `nil` disables caching |
+| `readiness_path` | `String` | `"ready"` | Path of the readiness endpoint within the engine (e.g. `"ready"` → `/health/ready`) |
 | `token` | `String\|nil` | `nil` | Bearer token for authentication |
 | `allowed_ips` | `Array\|nil` | `nil` | IP allowlist; accepts exact IPs and CIDR ranges |
 | `redis_url` | `String\|nil` | `nil` | Redis URL for `:redis` check; falls back to `REDIS_URL` env var then `redis://localhost:6379/0` |
@@ -385,6 +509,8 @@ Configuration is validated at boot time. An unknown check name, a missing `http_
 ## Authentication
 
 By default health endpoints are public. Use one of the following strategies to restrict access. Unauthenticated requests receive `401 Unauthorized`.
+
+> **Note:** `GET /health/live` always bypasses authentication regardless of the configured strategy. Liveness probes are called by Kubernetes and load balancers which cannot pass credentials, so enforcing auth on this endpoint would break infrastructure probing.
 
 ### Bearer token
 
