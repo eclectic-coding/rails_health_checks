@@ -267,9 +267,6 @@ GEM
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.13.2)
-    simplecov-json (0.2.3)
-      json
-      simplecov
     simplecov_json_formatter (0.1.4)
     sqlite3 (2.9.5-aarch64-linux-gnu)
     sqlite3 (2.9.5-aarch64-linux-musl)
@@ -315,7 +312,7 @@ DEPENDENCIES
   rspec-rails
   rubocop-rails-omakase
   simplecov
-  simplecov-json
+  simplecov_json_formatter
   sqlite3
 
 CHECKSUMS
@@ -409,7 +406,6 @@ CHECKSUMS
   securerandom (0.4.1) sha256=cc5193d414a4341b6e225f0cb4446aceca8e50d5e1888743fac16987638ea0b1
   simplecov (0.22.0) sha256=fe2622c7834ff23b98066bb0a854284b2729a569ac659f82621fc22ef36213a5
   simplecov-html (0.13.2) sha256=bd0b8e54e7c2d7685927e8d6286466359b6f16b18cb0df47b508e8d73c777246
-  simplecov-json (0.2.3) sha256=c63823b5dfc95c85ff4cb94251765f08a166bdd68098f259368cbfe738e281f7
   simplecov_json_formatter (0.1.4) sha256=529418fbe8de1713ac2b2d612aa3daa56d316975d307244399fa4838c601b428
   sqlite3 (2.9.5-aarch64-linux-gnu) sha256=78075b6337d3d182c6d2b4691049ed45cd220826160c9ea18946bf6a1de200dc
   sqlite3 (2.9.5-aarch64-linux-musl) sha256=18c801185deb4adc01ddb281e8f672a39e3d1729979ca91e39439cd3eac0402d
