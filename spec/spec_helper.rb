@@ -9,15 +9,15 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
 ])
 
 SimpleCov.start 'rails' do
-  add_filter '/spec/'
-  add_filter '/lib/rails_health_checks/version.rb'
-  add_filter '/lib/generators/rails_health_checks/templates/'
-  add_filter '/app/jobs/'
-  add_filter '/app/mailers/'
-  add_filter '/app/models/'
+  skip '/spec/'
+  skip '/lib/rails_health_checks/version.rb'
+  skip '/lib/generators/rails_health_checks/templates/'
+  skip '/app/jobs/'
+  skip '/app/mailers/'
+  skip '/app/models/'
 
-  add_group 'Controllers', 'app/controllers'
-  add_group 'Library',     'lib'
+  group 'Controllers', 'app/controllers'
+  group 'Library',     'lib'
 end
 
 RSpec.configure do |config|

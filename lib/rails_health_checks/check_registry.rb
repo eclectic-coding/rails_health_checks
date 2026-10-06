@@ -69,9 +69,9 @@ module RailsHealthChecks
       if defined?(ActiveSupport::Notifications)
         ActiveSupport::Notifications.instrument("health_check.rails_health_checks", &block)
       else
-        # :nocov:
+        # simplecov:disable
         yield nil
-        # :nocov:
+        # simplecov:enable
       end
     end
 
