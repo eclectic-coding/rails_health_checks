@@ -13,7 +13,7 @@ gem "sqlite3"
 gem "bundler-audit", require: false
 gem "rspec-rails"
 gem "rubocop-rails-omakase", require: false
-gem "simplecov",                  require: false
+gem "simplecov", ">= 1.3",                  require: false
 gem "simplecov_json_formatter",   require: false
 
 gem "benchmark",     require: false
