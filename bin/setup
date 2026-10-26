@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+bundle install
+
+# Enable the tracked git hooks (pre-push runs the full rake suite).
+git config core.hooksPath .githooks

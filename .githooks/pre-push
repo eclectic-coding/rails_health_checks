@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Runs the full check suite before every push.
+# Enabled by bin/setup via `git config core.hooksPath .githooks`.
+# Bypass in an emergency with `git push --no-verify`.
+set -euo pipefail
+
+echo "pre-push: running bundle exec rake..."
+bundle exec rake
