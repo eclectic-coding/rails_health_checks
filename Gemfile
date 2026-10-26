@@ -10,6 +10,7 @@ gem "puma"
 gem "sqlite3"
 
 # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
+gem "brakeman", require: false
 gem "bundler-audit", require: false
 gem "rspec-rails"
 gem "rubocop-rails-omakase", require: false

@@ -1,0 +1,30 @@
+name: Scheduled audit
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Security audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+
+      - name: Run bundler-audit
+        run: bundle exec rake bundle:audit:update bundle:audit:check
+
+      - name: Run Brakeman
+        run: bundle exec rake brakeman
