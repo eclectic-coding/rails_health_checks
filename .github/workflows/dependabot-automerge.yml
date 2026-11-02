@@ -20,7 +20,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Enable auto-merge
-        if: contains(fromJSON('["direct:development", "indirect"]'), steps.metadata.outputs.dependency-type) && steps.metadata.outputs.update-type != 'version-update:semver-major'
+        if: steps.metadata.outputs.update-type != 'version-update:semver-major' && (steps.metadata.outputs.dependency-group == 'bundler-minor-patch' || contains(fromJSON('["direct:development", "indirect"]'), steps.metadata.outputs.dependency-type))
         run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
