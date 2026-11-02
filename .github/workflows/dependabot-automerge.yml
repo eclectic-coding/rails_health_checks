@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   automerge:
-    name: Auto-merge patch and minor dev updates
+    name: Auto-merge patch and minor dev and transitive updates
     runs-on: ubuntu-latest
     if: github.event.pull_request.user.login == 'dependabot[bot]'
 
@@ -20,7 +20,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Enable auto-merge
-        if: steps.metadata.outputs.dependency-type == 'direct:development' && steps.metadata.outputs.update-type != 'version-update:semver-major'
+        if: steps.metadata.outputs.update-type != 'version-update:semver-major' && (steps.metadata.outputs.dependency-group == 'bundler-minor-patch' || contains(fromJSON('["direct:development", "indirect"]'), steps.metadata.outputs.dependency-type))
         run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
