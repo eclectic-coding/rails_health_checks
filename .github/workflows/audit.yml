@@ -24,24 +24,39 @@ jobs:
           ruby-version: "3.4"
           bundler-cache: true
 
+      # Neither check fails the run: a red scheduled run emails everyone and
+      # shows as a failing badge. Findings are reported through an issue instead.
       - name: Run bundler-audit
+        id: audit
+        continue-on-error: true
         run: bundle exec rake bundle:audit:update bundle:audit:check
 
       - name: Run Brakeman
-        if: ${{ !cancelled() }}
+        id: brakeman
+        continue-on-error: true
         run: bundle exec rake brakeman
 
-      - name: Open or update an issue on failure
-        if: ${{ failure() && github.event_name == 'schedule' }}
+      - name: Open an issue on failure
+        if: ${{ github.event_name == 'schedule' && (steps.audit.outcome == 'failure' || steps.brakeman.outcome == 'failure') }}
         env:
           GH_TOKEN: ${{ github.token }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          title="Scheduled security audit failing"
-          body="The scheduled audit failed: ${RUN_URL}. Fix with \`bundle update --conservative <gem>\` for the gems listed in the log."
-          number=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number')
-          if [ -n "$number" ]; then
-            gh issue comment "$number" --body "Still failing: ${RUN_URL}"
+          existing=$(gh issue list --state open --label security-audit --json number --jq '.[0].number // empty')
+          if [ -z "$existing" ]; then
+            gh label create security-audit --description "Scheduled security audit failure" --color D93F0B 2>/dev/null || true
+            gh issue create --label security-audit \
+              --title "Scheduled security audit is failing" \
+              --body "bundler-audit or Brakeman reported findings. See the [run]($RUN_URL), then update the affected gems (\`bundle update --conservative <gem>\`) or fix the warning. This issue closes itself when the audit passes."
           else
-            gh issue create --title "$title" --body "$body"
+            gh issue comment "$existing" --body "Still failing: ${RUN_URL}"
           fi
+
+      - name: Close the audit issue once passing
+        if: ${{ github.event_name == 'schedule' && steps.audit.outcome == 'success' && steps.brakeman.outcome == 'success' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for n in $(gh issue list --state open --label security-audit --json number --jq '.[].number'); do
+            gh issue close "$n" --comment "Audit is passing again."
+          done
