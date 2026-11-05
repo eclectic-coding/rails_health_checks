@@ -3,12 +3,14 @@ updates:
 - package-ecosystem: bundler
   directory: "/"
   schedule:
-    interval: weekly
+    # Daily, to match the daily scheduled audit: a weekly cadence left new
+    # advisories failing the audit for days before a fix PR appeared.
+    interval: daily
   open-pull-requests-limit: 10
   # Also bump transitive gems (rack, nokogiri, ...); advisories there fail the audit.
   allow:
   - dependency-type: all
-  # One PR per week for all minor/patch bumps; majors stay separate PRs.
+  # One PR per run for all minor/patch bumps; majors stay separate PRs.
   groups:
     bundler-minor-patch:
       patterns:
