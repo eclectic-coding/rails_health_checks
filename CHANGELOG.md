@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Health checks now run inside the Rails executor, so Active Record connections leased on Concurrent's pool threads (`:database`, `:solid_queue`, `:good_job`, and `:cache` with Solid Cache) are returned when each check finishes, including on timeout. Previously each uncached request could leave one connection per pool thread checked out for good, eventually exhausting the pool with `ActiveRecord::ConnectionTimeoutError` (#82). The thread waiting on the checks is also wrapped in `ActiveSupport::Dependencies.interlock.permit_concurrent_loads`, so a pending code reload in development cannot stall a request until the timeout.
+
 ## [1.2.0] - 2026-06-12
 
 ### Added

@@ -51,9 +51,11 @@ module RailsHealthChecks
           t = check.timeout || timeout
           Concurrent::Future.execute { run_check(check, timeout: t) }
         end
-        checks.each do |name, check|
-          t = check.timeout || timeout
-          results[name] = futures[name].value(t + 1) || mark_critical(check, "timed out")
+        permit_concurrent_loads do
+          checks.each do |name, check|
+            t = check.timeout || timeout
+            results[name] = futures[name].value(t + 1) || mark_critical(check, "timed out")
+          end
         end
         if payload
           payload[:status] = overall_status(results)
@@ -76,12 +78,36 @@ module RailsHealthChecks
     end
 
     def self.run_check(check, timeout:)
-      Timeout.timeout(timeout) { check.call }
-      check
+      with_executor do
+        Timeout.timeout(timeout) { check.call }
+        check
+      end
     rescue Timeout::Error
       mark_critical(check, "timed out")
     rescue StandardError => e
       mark_critical(check, e.message)
+    end
+
+    # Checks run on Concurrent's global pool, outside the request thread. Wrapping
+    # each one in the Rails executor returns any Active Record connections it
+    # leased (primary, cache, queue, ...) when the check finishes, including on
+    # timeout; otherwise they stay checked out by the long-lived pool thread.
+    def self.with_executor(&block)
+      if defined?(Rails) && Rails.application
+        Rails.application.executor.wrap(&block)
+      else
+        yield
+      end
+    end
+
+    # In development the request thread holds the autoload interlock while it
+    # waits on the futures; the check threads need it to load code, so let them.
+    def self.permit_concurrent_loads(&block)
+      if defined?(ActiveSupport::Dependencies) && ActiveSupport::Dependencies.respond_to?(:interlock)
+        ActiveSupport::Dependencies.interlock.permit_concurrent_loads(&block)
+      else
+        yield
+      end
     end
 
     def self.mark_critical(check, message)
@@ -98,6 +124,6 @@ module RailsHealthChecks
       end
     end
 
-    private_class_method :run_check, :mark_critical, :overall_status, :instrument
+    private_class_method :run_check, :with_executor, :permit_concurrent_loads, :mark_critical, :overall_status, :instrument
   end
 end
