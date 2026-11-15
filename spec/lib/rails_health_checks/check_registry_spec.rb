@@ -208,5 +208,70 @@ RSpec.describe RailsHealthChecks::CheckRegistry do
         checks.each_value { |c| expect(c.status).to eq("ok") }
       end
     end
+
+    context "Active Record connection handling" do
+      # Transactional tests pin every thread to one shared connection, which hides the leak.
+      self.use_transactional_tests = false
+
+      it "returns the connections leased by the check threads" do
+        pool = ActiveRecord::Base.connection_pool
+        pool.release_connection
+        busy_before = pool.stat[:busy]
+
+        5.times { described_class.run(described_class.build(%i[database]), timeout: 5) }
+
+        pool.release_connection
+        expect(pool.stat[:busy]).to eq(busy_before)
+      end
+
+      it "returns the connection even when the check times out" do
+        slow = Class.new(RailsHealthChecks::Check) do
+          def call
+            ActiveRecord::Base.connection.execute("SELECT 1")
+            sleep 2
+          end
+        end.new
+        pool = ActiveRecord::Base.connection_pool
+        pool.release_connection
+
+        described_class.run({ slow: slow }, timeout: 0.1)
+        sleep 0.2 # let the check thread unwind
+
+        expect(pool.stat[:busy]).to eq(0)
+        expect(slow.status).to eq("critical")
+      end
+    end
+
+    context "when there is no Rails application" do
+      it "still runs the checks" do
+        allow(Rails).to receive(:application).and_return(nil)
+        checks = described_class.build(%i[disk])
+
+        described_class.run(checks, timeout: 5)
+
+        expect(checks[:disk].status).to be_in(%w[ok degraded critical])
+        expect(checks[:disk].message).not_to eq("timed out")
+      end
+    end
+
+    context "when ActiveSupport::Dependencies is unavailable" do
+      it "still collects the check results" do
+        hide_const("ActiveSupport::Dependencies")
+        checks = described_class.build(%i[disk])
+
+        described_class.run(checks, timeout: 5)
+
+        expect(checks[:disk].message).not_to eq("timed out")
+      end
+    end
+
+    it "lets check threads load code while waiting on the futures" do
+      interlock = ActiveSupport::Dependencies.interlock
+      allow(interlock).to receive(:permit_concurrent_loads).and_call_original
+
+      described_class.run(described_class.build(%i[disk]), timeout: 5)
+
+      expect(interlock).to have_received(:permit_concurrent_loads)
+    end
   end
 end
