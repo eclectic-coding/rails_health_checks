@@ -105,4 +105,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage/codecov.json
+          # Only upload the converted report; auto-discovery also finds the raw coverage.json.
+          disable_search: true
           fail_ci_if_error: true
