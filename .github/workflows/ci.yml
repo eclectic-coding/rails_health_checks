@@ -85,9 +85,24 @@ jobs:
 
       - run: bundle exec rspec
 
+      # simplecov_json_formatter nests each file as {"lines": [...]} under absolute
+      # paths, which Codecov's generic JSON parser rejects (the upload "succeeds" but
+      # processing errors and the badge reads 0%). Flatten to {relative/path => [hits]}.
+      # Ignored (simplecov:disable) lines stay null.
+      - name: Convert coverage report for Codecov
+        if: matrix.ruby == '4.0' && matrix.gemfile == 'Gemfile'
+        run: |
+          ruby -rjson -e '
+            root = Dir.pwd + "/"
+            src = JSON.parse(File.read("coverage/coverage.json"))
+            out = { "coverage" => src["coverage"].to_h { |f, d| [f.delete_prefix(root), d["lines"]] } }
+            File.write("coverage/codecov.json", JSON.generate(out))
+          '
+
       - name: Upload coverage to Codecov
         if: matrix.ruby == '4.0' && matrix.gemfile == 'Gemfile'
         uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage/coverage.json
+          files: coverage/codecov.json
+          fail_ci_if_error: true
