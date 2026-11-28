@@ -107,4 +107,6 @@ jobs:
           files: coverage/codecov.json
           # Only upload the converted report; auto-discovery also finds the raw coverage.json.
           disable_search: true
-          fail_ci_if_error: true
+          # Dependabot PRs cannot read repo secrets (no CODECOV_TOKEN), so the upload
+          # is rejected there. Do not let that block auto-merge of dependency bumps.
+          fail_ci_if_error: ${{ github.actor != 'dependabot[bot]' }}
